@@ -1,32 +1,108 @@
+<p align="center">
+  <img src="assets/jsonl-vault-spike-hero.svg" alt="JSONL Vault Spike hero" width="100%">
+</p>
+
 # jsonl-vault-spike
 
-Synthetic MVP for an agent-first replacement layer for a Markdown/Obsidian-style vault.
+[![Status](https://img.shields.io/badge/status-proof--of--concept-blue)](#)
+[![Data](https://img.shields.io/badge/data-synthetic--only-green)](#safety-boundary)
+[![Gate](https://img.shields.io/badge/gate-make%20check-111827)](#verification)
 
-This repo contains **no personal vault data**. All records are fictional but shaped like a real personal context system:
+A public, synthetic proof of concept for replacing a Markdown/Obsidian-style vault with an **agent-readable JSONL context layer**.
 
-- raw append-only evidence
-- typed JSONL records
-- explicit claims/sources/relations/tasks/decisions
-- generated SQLite index
-- generated Markdown views
-- bounded agent context bundles
+The repo demonstrates the core shape:
 
-## Quickstart
+```text
+raw evidence -> typed JSONL records -> context bundles -> generated SQLite/Markdown views
+```
+
+## Why this exists
+
+Markdown notes are good for humans but weak as an agent source of truth: links are implicit, claims blur into prose, provenance gets lost, and retrieval often depends on guesswork. This spike tests a stricter model where small typed records are canonical and human views are generated.
+
+## Safety boundary
+
+**No real personal data.**
+
+This repository intentionally uses synthetic examples only. Do not add real vault exports, names, messages, emails, file paths, credentials, screenshots, or attachments.
+
+## Repository map
+
+| Path | Role | Canonical? |
+| --- | --- | --- |
+| `raw/*.jsonl` | Synthetic source evidence | input |
+| `records/*.jsonl` | Typed records: entities, projects, claims, relations, tasks, decisions | yes |
+| `schema/*.schema.json` | JSON Schema contracts per record type | yes |
+| `retrieval/*.jsonl` | Query hints for agents | yes |
+| `evals/*.jsonl` | Retrieval expectations | yes |
+| `dist/` | SQLite and bundle outputs | generated |
+| `views/markdown/` | Human-readable Markdown exports | generated examples |
+
+## Quick start
 
 ```bash
+git clone https://github.com/viggomeesters/jsonl-vault-spike.git
+cd jsonl-vault-spike
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
 make check
-python3 scripts/vaultctx.py query vault schema
-python3 scripts/vaultctx.py bundle --goal "decide JSONL migration" --output dist/bundles/migration.json
+```
+
+## CLI
+
+Run from the repo:
+
+```bash
+python3 scripts/vaultctx.py validate
+python3 scripts/vaultctx.py query vault migration
+python3 scripts/vaultctx.py bundle --goal "replace markdown with jsonl"
 python3 scripts/vaultctx.py build-sqlite
 python3 scripts/vaultctx.py render-views
 ```
 
-## Design rule
+Install as a package:
 
-Do not convert notes 1:1 into JSONL. Normalize knowledge into records:
-
-```text
-raw evidence -> sources -> claims/entities/projects/tasks/decisions -> relations -> bundles/views/indexes
+```bash
+python3 -m pip install .
+vaultctx validate
 ```
 
-`records/*.jsonl` is canonical. `dist/` and `views/` are generated.
+## Agent usage
+
+Agents should treat `records/*.jsonl` as the source of truth and use generated bundles for bounded context. A useful default flow is:
+
+1. validate record contracts;
+2. query relevant records;
+3. generate a bundle for the current goal;
+4. cite `source` / `evidence` records before making claims;
+5. regenerate views and SQLite after canonical records change.
+
+## Verification
+
+Full local gate:
+
+```bash
+make check
+python3 -m py_compile jsonl_vault_spike/*.py scripts/*.py tests/*.py
+```
+
+`make check` includes:
+
+- repository guard for public-data safety and required public files;
+- JSONL record validation;
+- tests;
+- SQLite build;
+- Markdown view rendering;
+- demo bundle generation.
+
+## Package and release
+
+See [`docs/PACKAGE.md`](docs/PACKAGE.md).
+
+## Contributing
+
+Read [`CONTRIBUTORS.md`](CONTRIBUTORS.md), [`SUPPORT.md`](SUPPORT.md), and [`SECURITY.md`](SECURITY.md) first. Keep all examples synthetic.
+
+## License
+
+MIT. See [`LICENSE`](LICENSE).

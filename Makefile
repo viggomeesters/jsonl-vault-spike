@@ -2,7 +2,10 @@ PYTHON ?= python3
 
 .PHONY: check validate test build-sqlite render-views bundle clean
 
-check: validate test build-sqlite render-views bundle
+check: repo-guard validate test build-sqlite render-views bundle
+
+repo-guard:
+	$(PYTHON) scripts/validate_repository.py
 
 validate:
 	$(PYTHON) scripts/vaultctx.py validate

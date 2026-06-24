@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security or private data concern
+    url: https://github.com/viggomeesters/jsonl-vault-spike/security/policy
+    about: Do not paste private data into public issues.

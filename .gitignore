@@ -1,6 +1,10 @@
 dist/*.sqlite
 dist/*.duckdb
 dist/bundles/*.json
+dist/*.whl
+dist/*.tar.gz
+build/
+*.egg-info/
 __pycache__/
 *.py[cod]
 .venv/
