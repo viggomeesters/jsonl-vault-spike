@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Synthetic vault note record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "kind",
+    "vault_type",
+    "category",
+    "area",
+    "title",
+    "summary",
+    "body",
+    "privacy",
+    "source_ids",
+    "evidence_ids",
+    "created_at",
+    "synthetic"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^note\\.synthetic\\.[0-9]{5}$"
+    },
+    "kind": {
+      "const": "note"
+    },
+    "vault_type": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "area": {
+      "type": "string",
+      "enum": [
+        "home",
+        "self",
+        "social",
+        "work"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1
+    },
+    "privacy": {
+      "type": "string",
+      "enum": [
+        "public",
+        "private",
+        "sensitive"
+      ]
+    },
+    "source_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true
+    },
+    "coverage_seed": {
+      "type": "boolean"
+    }
+  }
+}

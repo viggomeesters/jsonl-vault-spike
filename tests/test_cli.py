@@ -16,6 +16,7 @@ def run(*args):
 def test_validate_records():
     result = run("validate")
     assert "OK: validated" in result.stdout
+    assert "10015 records across 8 JSONL files" in result.stdout
 
 
 def test_bundle_contains_citations(tmp_path):
@@ -31,7 +32,7 @@ def test_sqlite_build_contains_records():
     run("build-sqlite")
     con = sqlite3.connect(ROOT / "dist" / "context.sqlite")
     count = con.execute("select count(*) from records").fetchone()[0]
-    assert count >= 10
+    assert count == 10015
 
 
 def test_render_views_creates_project_view():
@@ -52,4 +53,16 @@ def test_module_cli_validates_from_outside_checkout(tmp_path):
         capture_output=True,
         check=True,
     )
-    assert "OK: validated 15 records" in result.stdout
+    assert "OK: validated 10015 records" in result.stdout
+
+
+def test_generated_dataset_covers_vault_schema_matrix():
+    coverage = json.loads((ROOT / "reports" / "vault-schema-coverage.json").read_text())
+    assert coverage["record_count"] == 10000
+    assert coverage["type_count"] == 11
+    assert coverage["category_pair_count"] == coverage["expected_category_pair_count"] == 88
+    assert coverage["missing_category_pairs"] == []
+    assert set(coverage["type_counts"]) == {
+        "anniversary", "chore", "context", "entity", "entry", "health",
+        "interaction", "project", "purchase", "reference", "task",
+    }

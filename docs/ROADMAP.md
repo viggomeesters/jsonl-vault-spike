@@ -3,6 +3,7 @@
 ## v0.1 — proof of concept
 
 - Synthetic typed JSONL records.
+- 10,000-record vault-schema coverage fixture across every current type/category pair.
 - Validation against JSON Schema.
 - Bounded context bundle generation.
 - Generated SQLite and Markdown views.

@@ -26,3 +26,15 @@ Every canonical record should have:
 - no Obsidian plugin
 - no automatic migration of an existing vault
 - no generated embedding/vector store yet
+
+## Vault-schema coverage fixture
+
+`records/notes.jsonl` is a large synthetic fixture generated from the public `vault-schema` type/category matrix. It is intentionally not a copy of a real vault. The dataset proves that downstream validation, SQLite projection, bundle generation, and retrieval experiments can handle all schema categories at 10,000-record scale.
+
+Generation contract:
+
+```bash
+python3 scripts/generate_synthetic_dataset.py --count 10000
+```
+
+The generator also syncs the embedded package dataset under `jsonl_vault_spike/data/` so wheel/sdist installs can run `vaultctx validate` outside a checkout.

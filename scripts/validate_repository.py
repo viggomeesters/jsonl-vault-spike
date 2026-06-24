@@ -10,10 +10,11 @@ PUBLIC_FORBIDDEN = [
     "/mnt/c/Users", "/Users/viggomeesters", "viggomeesters@", "@gmail", "@icloud",
     "Syncthing/vault", "iCloud~md~obsidian",
 ]
-ALLOWED_GUARD_FILES = {"scripts/validate_repository.py", "jsonl_vault_spike/cli.py", "AGENTS.md"}
+ALLOWED_GUARD_FILES = {"scripts/validate_repository.py", "scripts/generate_synthetic_dataset.py", "jsonl_vault_spike/cli.py", "AGENTS.md"}
 REQUIRED_PATHS = [
     "README.md", "LICENSE", "CHANGELOG.md", "SUPPORT.md", "SECURITY.md", "CODE_OF_CONDUCT.md",
     "CONTRIBUTORS.md", "NOTICE.md", "AGENTS.md", "Makefile", "pyproject.toml",
+    "scripts/generate_synthetic_dataset.py", "reports/vault-schema-coverage.json", "schema/note.schema.json", "records/notes.jsonl",
     "assets/jsonl-vault-spike-hero.svg", "docs/ARCHITECTURE.md", "docs/ROADMAP.md",
     "docs/PACKAGE.md", "docs/HERO_PROMPT.md", "docs/MAINTAINER_CHECKLIST.md", "docs/REPO_COMPLETE.md",
     ".github/pull_request_template.md", ".github/ISSUE_TEMPLATE/config.yml",

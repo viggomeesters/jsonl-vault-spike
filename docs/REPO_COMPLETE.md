@@ -11,6 +11,7 @@ Status: public-ready proof of concept.
 - Generated SQLite and Markdown views.
 - Package metadata and console script.
 - Embedded synthetic package dataset, so the installed CLI can validate outside a checkout.
+- 10,000 generated note records covering all 88 current vault-schema type/category pairs.
 - Governance docs and issue/PR routing.
 - Repository guard wired into `make check`.
 

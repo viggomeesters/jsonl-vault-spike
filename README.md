@@ -31,10 +31,11 @@ This repository intentionally uses synthetic examples only. Do not add real vaul
 | Path | Role | Canonical? |
 | --- | --- | --- |
 | `raw/*.jsonl` | Synthetic source evidence | input |
-| `records/*.jsonl` | Typed records: entities, projects, claims, relations, tasks, decisions | yes |
+| `records/*.jsonl` | Typed records: entities, projects, claims, relations, tasks, decisions, plus 10,000 synthetic note records | yes |
 | `schema/*.schema.json` | JSON Schema contracts per record type | yes |
 | `retrieval/*.jsonl` | Query hints for agents | yes |
 | `evals/*.jsonl` | Retrieval expectations | yes |
+| `reports/vault-schema-coverage.json` | Coverage proof for every vault-schema type/category pair | generated but tracked |
 | `dist/` | SQLite and bundle outputs | generated |
 | `views/markdown/` | Human-readable Markdown exports | generated examples |
 
@@ -53,6 +54,7 @@ make check
 Run from the repo:
 
 ```bash
+python3 scripts/generate_synthetic_dataset.py --count 10000
 python3 scripts/vaultctx.py validate
 python3 scripts/vaultctx.py query vault migration
 python3 scripts/vaultctx.py bundle --goal "replace markdown with jsonl"
@@ -65,6 +67,25 @@ Install as a package:
 ```bash
 python3 -m pip install .
 vaultctx validate
+```
+
+
+## Vault-schema coverage dataset
+
+The repo includes `records/notes.jsonl` with **10,000 public-safe synthetic note records** generated from [`viggomeesters/vault-schema`](https://github.com/viggomeesters/vault-schema). The generator covers every current vault-schema `type/category` pair at least once, then scales deterministically.
+
+Coverage proof lives in `reports/vault-schema-coverage.json`:
+
+- 11 schema types;
+- 88 type/category pairs;
+- 0 missing pairs;
+- 10,000 generated note records.
+
+Regenerate after a schema change:
+
+```bash
+python3 scripts/generate_synthetic_dataset.py --count 10000
+make check
 ```
 
 ## Agent usage

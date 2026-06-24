@@ -26,6 +26,7 @@ SCHEMA_BY_FILE = {
     "relations.jsonl": "relation.schema.json",
     "tasks.jsonl": "task.schema.json",
     "decisions.jsonl": "decision.schema.json",
+    "notes.jsonl": "note.schema.json",
 }
 
 
