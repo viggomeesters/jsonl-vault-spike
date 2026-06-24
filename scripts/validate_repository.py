@@ -15,7 +15,7 @@ REQUIRED_PATHS = [
     "README.md", "LICENSE", "CHANGELOG.md", "SUPPORT.md", "SECURITY.md", "CODE_OF_CONDUCT.md",
     "CONTRIBUTORS.md", "NOTICE.md", "AGENTS.md", "Makefile", "pyproject.toml",
     "assets/jsonl-vault-spike-hero.svg", "docs/ARCHITECTURE.md", "docs/ROADMAP.md",
-    "docs/PACKAGE.md", "docs/MAINTAINER_CHECKLIST.md", "docs/REPO_COMPLETE.md",
+    "docs/PACKAGE.md", "docs/HERO_PROMPT.md", "docs/MAINTAINER_CHECKLIST.md", "docs/REPO_COMPLETE.md",
     ".github/pull_request_template.md", ".github/ISSUE_TEMPLATE/config.yml", ".github/CODEOWNERS",
 ]
 GENERATED_UNTRACKED = ["dist/context.sqlite", "dist/bundles/migration-demo.json"]

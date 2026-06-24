@@ -97,7 +97,7 @@ python3 -m py_compile jsonl_vault_spike/*.py scripts/*.py tests/*.py
 
 ## Package and release
 
-See [`docs/PACKAGE.md`](docs/PACKAGE.md).
+See [`docs/PACKAGE.md`](docs/PACKAGE.md). The README hero prompt/provenance is saved in [`docs/HERO_PROMPT.md`](docs/HERO_PROMPT.md).
 
 ## Contributing
 

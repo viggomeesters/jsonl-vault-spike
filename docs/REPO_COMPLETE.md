@@ -5,6 +5,7 @@ Status: public-ready proof of concept.
 ## Included
 
 - Public README with hero.
+- Hero prompt/provenance saved in `docs/HERO_PROMPT.md`.
 - Synthetic-only data boundary.
 - JSONL record schemas and validator.
 - Generated SQLite and Markdown views.
