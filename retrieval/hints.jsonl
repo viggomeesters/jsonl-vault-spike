@@ -1,0 +1,2 @@
+{"id": "hint.vault-migration", "keywords": ["jsonl", "vault migration", "agent-first", "markdown replacement"], "negative_keywords": ["obsidian plugin styling"], "queries": ["How should I migrate Markdown notes to JSONL?", "What is the agent-first vault architecture?"], "target_id": "project.vault-migration"}
+{"id": "hint.schema-contract", "keywords": ["json canonical", "yaml legacy", "schema contract"], "negative_keywords": ["personal diary"], "queries": ["Should schema contracts use JSON or YAML?"], "target_id": "project.schema-contract"}

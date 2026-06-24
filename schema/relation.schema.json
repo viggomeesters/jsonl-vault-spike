@@ -1,0 +1,48 @@
+{
+  "required": [
+    "id",
+    "kind",
+    "source_id",
+    "type",
+    "target_id",
+    "privacy"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z]+(\\.[a-z0-9-]+)+$"
+    },
+    "kind": {
+      "const": "relation"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "privacy": {
+      "type": "string",
+      "enum": [
+        "public",
+        "private",
+        "sensitive"
+      ]
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "target_id": {
+      "type": "string"
+    },
+    "evidence_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false
+}

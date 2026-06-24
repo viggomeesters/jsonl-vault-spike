@@ -1,0 +1,47 @@
+{
+  "required": [
+    "id",
+    "kind",
+    "summary",
+    "privacy",
+    "display_name"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z]+(\\.[a-z0-9-]+)+$"
+    },
+    "kind": {
+      "const": "entity"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "privacy": {
+      "type": "string",
+      "enum": [
+        "public",
+        "private",
+        "sensitive"
+      ]
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "source_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false
+}

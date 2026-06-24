@@ -1,0 +1,2 @@
+{"expected_ids": ["project.vault-migration", "claim.vault.records-not-notes"], "forbidden_ids": ["entity.person.sam"], "id": "eval.vault-migration-query", "query": "migrate markdown vault to jsonl"}
+{"expected_ids": ["project.schema-contract", "claim.schema.json-canonical"], "forbidden_ids": ["task.vault-migration.pilot-project-records"], "id": "eval.schema-json-query", "query": "json canonical schema yaml legacy"}

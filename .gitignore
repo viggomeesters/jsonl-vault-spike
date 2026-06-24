@@ -1,0 +1,7 @@
+dist/*.sqlite
+dist/*.duckdb
+dist/bundles/*.json
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
