@@ -30,5 +30,9 @@ Homepage = "https://github.com/viggomeesters/jsonl-vault-spike"
 Repository = "https://github.com/viggomeesters/jsonl-vault-spike"
 Issues = "https://github.com/viggomeesters/jsonl-vault-spike/issues"
 
-[tool.setuptools]
-packages = ["jsonl_vault_spike"]
+[tool.setuptools.packages.find]
+include = ["jsonl_vault_spike*"]
+namespaces = true
+
+[tool.setuptools.package-data]
+jsonl_vault_spike = ["data/**/*.jsonl", "data/**/*.json", "data/README.md"]

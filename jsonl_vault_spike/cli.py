@@ -6,9 +6,15 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
-ROOT = Path.cwd() if (Path.cwd() / "records").exists() and (Path.cwd() / "schema").exists() else PACKAGE_ROOT
-RECORDS = ROOT / "records"
-SCHEMA = ROOT / "schema"
+EMBEDDED_DATA = Path(__file__).resolve().parent / "data"
+if (Path.cwd() / "records").exists() and (Path.cwd() / "schema").exists():
+    ROOT = Path.cwd()
+    DATA_ROOT = ROOT
+else:
+    ROOT = Path.cwd()
+    DATA_ROOT = EMBEDDED_DATA
+RECORDS = DATA_ROOT / "records"
+SCHEMA = DATA_ROOT / "schema"
 DIST = ROOT / "dist"
 VIEWS = ROOT / "views" / "markdown"
 PRIVATE_PATTERNS = ["/Users/", "/mnt/c/Users/", "iCloud~md~obsidian", "Syncthing/vault", "@gmail.com", "@icloud.com"]

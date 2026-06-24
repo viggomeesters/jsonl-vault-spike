@@ -1,0 +1,59 @@
+{
+  "required": [
+    "id",
+    "kind",
+    "summary",
+    "privacy",
+    "subject_id",
+    "statement",
+    "confidence",
+    "evidence_ids"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z]+(\\.[a-z0-9-]+)+$"
+    },
+    "kind": {
+      "const": "claim"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "privacy": {
+      "type": "string",
+      "enum": [
+        "public",
+        "private",
+        "sensitive"
+      ]
+    },
+    "subject_id": {
+      "type": "string"
+    },
+    "statement": {
+      "type": "string"
+    },
+    "confidence": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "evidence_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "freshness": {
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false
+}

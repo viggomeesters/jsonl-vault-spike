@@ -16,7 +16,8 @@ REQUIRED_PATHS = [
     "CONTRIBUTORS.md", "NOTICE.md", "AGENTS.md", "Makefile", "pyproject.toml",
     "assets/jsonl-vault-spike-hero.svg", "docs/ARCHITECTURE.md", "docs/ROADMAP.md",
     "docs/PACKAGE.md", "docs/HERO_PROMPT.md", "docs/MAINTAINER_CHECKLIST.md", "docs/REPO_COMPLETE.md",
-    ".github/pull_request_template.md", ".github/ISSUE_TEMPLATE/config.yml", ".github/CODEOWNERS",
+    ".github/pull_request_template.md", ".github/ISSUE_TEMPLATE/config.yml",
+    ".github/ISSUE_TEMPLATE/bug_report.yml", ".github/ISSUE_TEMPLATE/design_question.yml", ".github/CODEOWNERS",
 ]
 GENERATED_UNTRACKED = ["dist/context.sqlite", "dist/bundles/migration-demo.json"]
 IDENTITY_STRINGS = ["jsonl-vault-spike", "jsonl_vault_spike", "vaultctx"]

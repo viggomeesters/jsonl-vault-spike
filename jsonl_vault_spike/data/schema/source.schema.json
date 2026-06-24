@@ -1,0 +1,42 @@
+{
+  "required": [
+    "id",
+    "kind",
+    "summary",
+    "privacy",
+    "locator",
+    "captured_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z]+(\\.[a-z0-9-]+)+$"
+    },
+    "kind": {
+      "const": "source"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "privacy": {
+      "type": "string",
+      "enum": [
+        "public",
+        "private",
+        "sensitive"
+      ]
+    },
+    "locator": {
+      "type": "object"
+    },
+    "captured_at": {
+      "type": "string"
+    },
+    "hash": {
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false
+}

@@ -1,0 +1,2 @@
+{"id": "project.vault-migration", "kind": "project", "privacy": "private", "source_ids": ["source.synthetic.chat-001"], "status": "active", "summary": "Design a JSONL-first personal context layer with generated views.", "title": "Agent-first vault migration"}
+{"id": "project.schema-contract", "kind": "project", "privacy": "public", "source_ids": ["source.synthetic.repo-001"], "status": "active", "summary": "Keep schema contracts JSON canonical and generate legacy exports.", "title": "Schema contract repo"}

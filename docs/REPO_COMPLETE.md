@@ -10,6 +10,7 @@ Status: public-ready proof of concept.
 - JSONL record schemas and validator.
 - Generated SQLite and Markdown views.
 - Package metadata and console script.
+- Embedded synthetic package dataset, so the installed CLI can validate outside a checkout.
 - Governance docs and issue/PR routing.
 - Repository guard wired into `make check`.
 

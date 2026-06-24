@@ -1,0 +1,35 @@
+name: Design question
+description: Ask a public-safe design question about the JSONL-first context model
+title: "Design: "
+labels: [question]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use synthetic examples only. Do not include real vault records, private identities, screenshots, or exports.
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What design tradeoff or model question should be discussed?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Synthetic context
+      description: Add a tiny synthetic record/example if useful.
+    validations:
+      required: false
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Records and schemas
+        - Bundles and retrieval
+        - Generated views
+        - Packaging and CLI
+        - Public-data safety
+    validations:
+      required: true

@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+import os
 import sqlite3
 import subprocess
 import sys
@@ -38,3 +39,17 @@ def test_render_views_creates_project_view():
     view = ROOT / "views" / "markdown" / "projects" / "vault-migration.md"
     assert view.exists()
     assert "Agent-first vault migration" in view.read_text()
+
+
+def test_module_cli_validates_from_outside_checkout(tmp_path):
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(ROOT)
+    result = subprocess.run(
+        [sys.executable, "-m", "jsonl_vault_spike.cli", "validate"],
+        cwd=tmp_path,
+        env=env,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    assert "OK: validated 15 records" in result.stdout

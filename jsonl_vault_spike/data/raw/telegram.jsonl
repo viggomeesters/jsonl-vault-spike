@@ -1,0 +1,1 @@
+{"derived_record_ids": ["source.synthetic.chat-001", "claim.vault.records-not-notes"], "hash": "sha256:synthetic-raw", "id": "raw.telegram.synthetic.001", "source": "telegram", "text": "Synthetic brainstorm: replace Markdown notes with typed JSONL records and generated views.", "timestamp": "2026-06-24T20:05:00+02:00"}
