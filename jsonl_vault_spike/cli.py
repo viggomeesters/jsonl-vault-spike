@@ -159,12 +159,56 @@ def build_sqlite(_args=None) -> int:
     return 0
 
 
+def markdown_escape(value: str) -> str:
+    return str(value).replace("|", "\\|")
+
+
+def frontmatter(rec: dict) -> str:
+    lines = ["---"]
+    for key in ["id", "kind", "vault_type", "category", "area", "privacy", "created_at", "synthetic", "coverage_seed"]:
+        if key in rec:
+            value = rec[key]
+            if isinstance(value, bool):
+                value = "true" if value else "false"
+            lines.append(f"{key}: {value}")
+    for key in ["source_ids", "evidence_ids"]:
+        if key in rec:
+            lines.append(f"{key}:")
+            for item in rec.get(key) or []:
+                lines.append(f"  - {item}")
+    lines.append("---")
+    return "\n".join(lines)
+
+
+def render_note_view(rec: dict) -> str:
+    return "\n".join([
+        frontmatter(rec),
+        "",
+        f"# {rec['title']}",
+        "",
+        rec["summary"],
+        "",
+        "## Body",
+        "",
+        rec["body"],
+        "",
+        "## Record",
+        "",
+        f"- Type: `{markdown_escape(rec['vault_type'])}`",
+        f"- Category: `{markdown_escape(rec['category'])}`",
+        f"- Area: `{markdown_escape(rec['area'])}`",
+        f"- Synthetic: `{str(rec['synthetic']).lower()}`",
+        "",
+    ])
+
+
 def render_views(_args=None) -> int:
     records = load_records()
-    for sub in [VIEWS / "projects", VIEWS / "entities"]:
+    for sub in [VIEWS / "projects", VIEWS / "entities", VIEWS / "notes"]:
         sub.mkdir(parents=True, exist_ok=True)
-        for old in sub.glob("*.md"):
+        for old in sub.rglob("*.md"):
             old.unlink()
+    rendered_notes = 0
     for rec in records.values():
         if rec["kind"] == "project":
             claims = [r for r in records.values() if r.get("subject_id") == rec["id"]]
@@ -174,7 +218,12 @@ def render_views(_args=None) -> int:
         if rec["kind"] == "entity":
             lines = [f"# {rec['display_name']}", "", rec["summary"], "", f"Privacy: `{rec['privacy']}`"]
             (VIEWS / "entities" / f"{rec['id'].split('.')[-1]}.md").write_text("\n".join(lines)+"\n", encoding="utf-8")
-    print("rendered markdown views")
+        if rec["kind"] == "note":
+            type_dir = VIEWS / "notes" / rec["vault_type"] / rec["category"]
+            type_dir.mkdir(parents=True, exist_ok=True)
+            (type_dir / f"{rec['id'].split('.')[-1]}.md").write_text(render_note_view(rec), encoding="utf-8")
+            rendered_notes += 1
+    print(f"rendered markdown views ({rendered_notes} note views)")
     return 0
 
 

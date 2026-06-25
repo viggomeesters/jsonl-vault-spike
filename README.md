@@ -98,6 +98,10 @@ Agents should treat `records/*.jsonl` as the source of truth and use generated b
 4. cite `source` / `evidence` records before making claims;
 5. regenerate views and SQLite after canonical records change.
 
+## Testing against a real Obsidian vault
+
+Use [`docs/VAULT_EVALUATION.md`](docs/VAULT_EVALUATION.md) for the read-only, private dry-run protocol. The public repo stays synthetic; real-vault evaluation output belongs under `.local/` or `/tmp/` and must not be committed.
+
 ## Verification
 
 Full local gate:

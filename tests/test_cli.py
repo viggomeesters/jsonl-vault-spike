@@ -42,6 +42,19 @@ def test_render_views_creates_project_view():
     assert "Agent-first vault migration" in view.read_text()
 
 
+def test_render_views_creates_note_views():
+    result = run("render-views")
+    assert "10000 note views" in result.stdout
+    note_views = list((ROOT / "views" / "markdown" / "notes").glob("**/*.md"))
+    assert len(note_views) == 10000
+    sample = ROOT / "views" / "markdown" / "notes" / "anniversary" / "adoptie" / "00001.md"
+    text = sample.read_text()
+    assert "kind: note" in text
+    assert "vault_type: anniversary" in text
+    assert "category: adoptie" in text
+    assert "# Synthetic recurring date — adoptie #00001" in text
+
+
 def test_module_cli_validates_from_outside_checkout(tmp_path):
     env = dict(os.environ)
     env["PYTHONPATH"] = str(ROOT)

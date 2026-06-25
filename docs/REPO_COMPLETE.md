@@ -12,6 +12,7 @@ Status: public-ready proof of concept.
 - Package metadata and console script.
 - Embedded synthetic package dataset, so the installed CLI can validate outside a checkout.
 - 10,000 generated note records covering all 88 current vault-schema type/category pairs.
+- Read-only real-vault evaluation plan in `docs/VAULT_EVALUATION.md`.
 - Governance docs and issue/PR routing.
 - Repository guard wired into `make check`.
 

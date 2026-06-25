@@ -16,7 +16,7 @@ REQUIRED_PATHS = [
     "CONTRIBUTORS.md", "NOTICE.md", "AGENTS.md", "Makefile", "pyproject.toml",
     "scripts/generate_synthetic_dataset.py", "reports/vault-schema-coverage.json", "schema/note.schema.json", "records/notes.jsonl",
     "assets/jsonl-vault-spike-hero.svg", "docs/ARCHITECTURE.md", "docs/ROADMAP.md",
-    "docs/PACKAGE.md", "docs/HERO_PROMPT.md", "docs/MAINTAINER_CHECKLIST.md", "docs/REPO_COMPLETE.md",
+    "docs/PACKAGE.md", "docs/HERO_PROMPT.md", "docs/VAULT_EVALUATION.md", "docs/MAINTAINER_CHECKLIST.md", "docs/REPO_COMPLETE.md",
     ".github/pull_request_template.md", ".github/ISSUE_TEMPLATE/config.yml",
     ".github/ISSUE_TEMPLATE/bug_report.yml", ".github/ISSUE_TEMPLATE/design_question.yml", ".github/CODEOWNERS",
 ]
