@@ -79,7 +79,10 @@ Coverage proof lives in `reports/vault-schema-coverage.json`:
 - 11 schema types;
 - 88 type/category pairs;
 - 0 missing pairs;
-- 10,000 generated note records.
+- 10,000 generated note records;
+- generated `schema/note.schema.json` constraints for valid `vault_type`, valid `category` per `vault_type`, and valid `area` per `vault_type/category` pair.
+
+The fixture is now matrix-strict for the fields that `vault-schema` exposes in `type_category_area`. It still does not invent deeper subtype-specific content fields that are not present in the public schema contract.
 
 Regenerate after a schema change:
 

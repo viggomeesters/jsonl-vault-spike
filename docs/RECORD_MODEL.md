@@ -108,4 +108,14 @@ Do not start with a big-bang rewrite.
 
 ## What this repo demonstrates
 
-This repo now uses `record_type` everywhere in the synthetic JSONL examples and schemas. It also includes 10,000 synthetic `note` records that cover every current vault-schema `vault_type/category` pair. Generated Markdown views prove that Markdown can be rebuilt from JSONL rather than hand-authored as the only source of truth.
+This repo uses `record_type` everywhere in the synthetic JSONL examples and schemas. It includes 10,000 synthetic `note` records that cover every current vault-schema `vault_type/category` pair.
+
+The generated note schema is strict for the public vault-schema matrix:
+
+- unknown `vault_type` values fail validation;
+- categories that do not belong to a `vault_type` fail validation;
+- areas that do not belong to a `vault_type/category` pair fail validation.
+
+Generated Markdown views prove that Markdown can be rebuilt from JSONL rather than hand-authored as the only source of truth.
+
+Boundary: the repo does not invent strict fields that the public vault-schema does not expose. Deeper extraction contracts such as person-specific fields, purchase amounts, health measurements, or project lifecycle fields should become separate typed record schemas or future generated constraints once those properties are modeled explicitly in the source schema.

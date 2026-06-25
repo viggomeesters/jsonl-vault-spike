@@ -4,6 +4,7 @@ import os
 import sqlite3
 import subprocess
 import sys
+from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).resolve().parents[1]
 CLI = [sys.executable, str(ROOT / "scripts" / "vaultctx.py")]
@@ -92,7 +93,33 @@ def test_generated_dataset_covers_vault_schema_matrix():
     assert coverage["type_count"] == 11
     assert coverage["category_pair_count"] == coverage["expected_category_pair_count"] == 88
     assert coverage["missing_category_pairs"] == []
+    assert coverage["variant_schema"] == {
+        "source": "schema/note.schema.json",
+        "enforces_vault_type_enum": True,
+        "enforces_category_per_vault_type": True,
+        "enforces_area_per_vault_type_category": True,
+        "all_of_rule_count": 99,
+        "expected_rule_count": 99,
+    }
     assert set(coverage["type_counts"]) == {
         "anniversary", "chore", "context", "entity", "entry", "health",
         "interaction", "project", "purchase", "reference", "task",
     }
+
+
+def test_note_schema_rejects_invalid_vault_schema_variants():
+    schema = json.loads((ROOT / "schema" / "note.schema.json").read_text())
+    validator = Draft202012Validator(schema)
+    records = [json.loads(line) for line in (ROOT / "records" / "notes.jsonl").read_text().splitlines()]
+    record = next(r for r in records if r["vault_type"] == "interaction" and r["category"] == "meeting")
+    assert record["area"] == "work"
+    assert list(validator.iter_errors(record)) == []
+
+    wrong_category = dict(record, category="adoptie")
+    assert list(validator.iter_errors(wrong_category)), "interaction/adoptie must be rejected"
+
+    wrong_area = dict(record, area="home")
+    assert list(validator.iter_errors(wrong_area)), "interaction/meeting/home must be rejected"
+
+    wrong_type = dict(record, vault_type="not-a-vault-type")
+    assert list(validator.iter_errors(wrong_type)), "unknown vault_type must be rejected"

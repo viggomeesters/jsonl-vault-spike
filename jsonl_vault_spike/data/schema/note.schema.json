@@ -1,8 +1,2771 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Synthetic vault note record",
-  "type": "object",
   "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "vault_type": {
+            "const": "anniversary"
+          }
+        },
+        "required": [
+          "vault_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "category": {
+            "enum": [
+              "adoptie",
+              "friendship",
+              "getrouwd",
+              "overleden",
+              "samenwonen",
+              "verhuisd",
+              "verjaardag",
+              "verkering"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "vault_type": {
+            "const": "chore"
+          }
+        },
+        "required": [
+          "vault_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "category": {
+            "enum": [
+              "Hygiene",
+              "administratie",
+              "boodschappen",
+              "health",
+              "huisdieren",
+              "kinderen",
+              "onderhoud",
+              "opruimen",
+              "relaties",
+              "schoonmaken",
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "vault_type": {
+            "const": "context"
+          }
+        },
+        "required": [
+          "vault_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "category": {
+            "enum": [
+              "project",
+              "self",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "vault_type": {
+            "const": "entity"
+          }
+        },
+        "required": [
+          "vault_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "category": {
+            "enum": [
+              "company",
+              "person",
+              "pet",
+              "place",
+              "product"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "vault_type": {
+            "const": "entry"
+          }
+        },
+        "required": [
+          "vault_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "category": {
+            "enum": [
+              "daily",
+              "eod",
+              "journal",
+              "log",
+              "note",
+              "reflection",
+              "snapshot",
+              "weekly",
+              "yearly"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "vault_type": {
+            "const": "health"
+          }
+        },
+        "required": [
+          "vault_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "category": {
+            "enum": [
+              "bloodpressure",
+              "measurement",
+              "migraine",
+              "nutrition",
+              "symptom",
+              "weight"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "vault_type": {
+            "const": "interaction"
+          }
+        },
+        "required": [
+          "vault_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "category": {
+            "enum": [
+              "call",
+              "chat",
+              "irl",
+              "letter",
+              "mail",
+              "meeting"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "vault_type": {
+            "const": "project"
+          }
+        },
+        "required": [
+          "vault_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "category": {
+            "enum": [
+              "client",
+              "internal",
+              "personal",
+              "project",
+              "social"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "vault_type": {
+            "const": "purchase"
+          }
+        },
+        "required": [
+          "vault_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "category": {
+            "enum": [
+              "appliances",
+              "baby",
+              "clothing",
+              "electronics",
+              "furniture",
+              "hobby",
+              "home",
+              "intimate",
+              "other",
+              "personal_care",
+              "pet",
+              "sports",
+              "subscription",
+              "vehicle"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "vault_type": {
+            "const": "reference"
+          }
+        },
+        "required": [
+          "vault_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "category": {
+            "enum": [
+              "article",
+              "attachment",
+              "book",
+              "bookmark",
+              "channel",
+              "course",
+              "game",
+              "guide",
+              "movie",
+              "podcast",
+              "series",
+              "tool",
+              "video"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "vault_type": {
+            "const": "task"
+          }
+        },
+        "required": [
+          "vault_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "category": {
+            "enum": [
+              "hands",
+              "home",
+              "inbox",
+              "ledger",
+              "money",
+              "screen",
+              "validation",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "adoptie"
+          },
+          "vault_type": {
+            "const": "anniversary"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "social"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "friendship"
+          },
+          "vault_type": {
+            "const": "anniversary"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "social"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "getrouwd"
+          },
+          "vault_type": {
+            "const": "anniversary"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self",
+              "social"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "overleden"
+          },
+          "vault_type": {
+            "const": "anniversary"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "social"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "samenwonen"
+          },
+          "vault_type": {
+            "const": "anniversary"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "verhuisd"
+          },
+          "vault_type": {
+            "const": "anniversary"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "verjaardag"
+          },
+          "vault_type": {
+            "const": "anniversary"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "social"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "verkering"
+          },
+          "vault_type": {
+            "const": "anniversary"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self",
+              "social"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "Hygiene"
+          },
+          "vault_type": {
+            "const": "chore"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "administratie"
+          },
+          "vault_type": {
+            "const": "chore"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "boodschappen"
+          },
+          "vault_type": {
+            "const": "chore"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "health"
+          },
+          "vault_type": {
+            "const": "chore"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "huisdieren"
+          },
+          "vault_type": {
+            "const": "chore"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "kinderen"
+          },
+          "vault_type": {
+            "const": "chore"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "onderhoud"
+          },
+          "vault_type": {
+            "const": "chore"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "opruimen"
+          },
+          "vault_type": {
+            "const": "chore"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "relaties"
+          },
+          "vault_type": {
+            "const": "chore"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "social"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "schoonmaken"
+          },
+          "vault_type": {
+            "const": "chore"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "self"
+          },
+          "vault_type": {
+            "const": "chore"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "project"
+          },
+          "vault_type": {
+            "const": "context"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "self"
+          },
+          "vault_type": {
+            "const": "context"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "work"
+          },
+          "vault_type": {
+            "const": "context"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "company"
+          },
+          "vault_type": {
+            "const": "entity"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "social",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "person"
+          },
+          "vault_type": {
+            "const": "entity"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "social",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "pet"
+          },
+          "vault_type": {
+            "const": "entity"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "social"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "place"
+          },
+          "vault_type": {
+            "const": "entity"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "social",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "product"
+          },
+          "vault_type": {
+            "const": "entity"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "daily"
+          },
+          "vault_type": {
+            "const": "entry"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "eod"
+          },
+          "vault_type": {
+            "const": "entry"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "journal"
+          },
+          "vault_type": {
+            "const": "entry"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "log"
+          },
+          "vault_type": {
+            "const": "entry"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "note"
+          },
+          "vault_type": {
+            "const": "entry"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "social",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "reflection"
+          },
+          "vault_type": {
+            "const": "entry"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "snapshot"
+          },
+          "vault_type": {
+            "const": "entry"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "social",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "weekly"
+          },
+          "vault_type": {
+            "const": "entry"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "yearly"
+          },
+          "vault_type": {
+            "const": "entry"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "bloodpressure"
+          },
+          "vault_type": {
+            "const": "health"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "measurement"
+          },
+          "vault_type": {
+            "const": "health"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "migraine"
+          },
+          "vault_type": {
+            "const": "health"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "nutrition"
+          },
+          "vault_type": {
+            "const": "health"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "symptom"
+          },
+          "vault_type": {
+            "const": "health"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "weight"
+          },
+          "vault_type": {
+            "const": "health"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "call"
+          },
+          "vault_type": {
+            "const": "interaction"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "social",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "chat"
+          },
+          "vault_type": {
+            "const": "interaction"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "social",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "irl"
+          },
+          "vault_type": {
+            "const": "interaction"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "social",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "letter"
+          },
+          "vault_type": {
+            "const": "interaction"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "social",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "mail"
+          },
+          "vault_type": {
+            "const": "interaction"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "social",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "meeting"
+          },
+          "vault_type": {
+            "const": "interaction"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "client"
+          },
+          "vault_type": {
+            "const": "project"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "internal"
+          },
+          "vault_type": {
+            "const": "project"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "personal"
+          },
+          "vault_type": {
+            "const": "project"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "social",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "project"
+          },
+          "vault_type": {
+            "const": "project"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "social"
+          },
+          "vault_type": {
+            "const": "project"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "social"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "appliances"
+          },
+          "vault_type": {
+            "const": "purchase"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "baby"
+          },
+          "vault_type": {
+            "const": "purchase"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "clothing"
+          },
+          "vault_type": {
+            "const": "purchase"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "electronics"
+          },
+          "vault_type": {
+            "const": "purchase"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "furniture"
+          },
+          "vault_type": {
+            "const": "purchase"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "hobby"
+          },
+          "vault_type": {
+            "const": "purchase"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "home"
+          },
+          "vault_type": {
+            "const": "purchase"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "intimate"
+          },
+          "vault_type": {
+            "const": "purchase"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "other"
+          },
+          "vault_type": {
+            "const": "purchase"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "social",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "personal_care"
+          },
+          "vault_type": {
+            "const": "purchase"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "pet"
+          },
+          "vault_type": {
+            "const": "purchase"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "sports"
+          },
+          "vault_type": {
+            "const": "purchase"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "subscription"
+          },
+          "vault_type": {
+            "const": "purchase"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "vehicle"
+          },
+          "vault_type": {
+            "const": "purchase"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "article"
+          },
+          "vault_type": {
+            "const": "reference"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "attachment"
+          },
+          "vault_type": {
+            "const": "reference"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "social",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "book"
+          },
+          "vault_type": {
+            "const": "reference"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "bookmark"
+          },
+          "vault_type": {
+            "const": "reference"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "social",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "channel"
+          },
+          "vault_type": {
+            "const": "reference"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "course"
+          },
+          "vault_type": {
+            "const": "reference"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "game"
+          },
+          "vault_type": {
+            "const": "reference"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self",
+              "social"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "guide"
+          },
+          "vault_type": {
+            "const": "reference"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "social",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "movie"
+          },
+          "vault_type": {
+            "const": "reference"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self",
+              "social"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "podcast"
+          },
+          "vault_type": {
+            "const": "reference"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "series"
+          },
+          "vault_type": {
+            "const": "reference"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self",
+              "social"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "tool"
+          },
+          "vault_type": {
+            "const": "reference"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "video"
+          },
+          "vault_type": {
+            "const": "reference"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "hands"
+          },
+          "vault_type": {
+            "const": "task"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "home"
+          },
+          "vault_type": {
+            "const": "task"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "inbox"
+          },
+          "vault_type": {
+            "const": "task"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "social",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "ledger"
+          },
+          "vault_type": {
+            "const": "task"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "self",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "money"
+          },
+          "vault_type": {
+            "const": "task"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "screen"
+          },
+          "vault_type": {
+            "const": "task"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "home",
+              "self",
+              "social",
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "validation"
+          },
+          "vault_type": {
+            "const": "task"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "work"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "work"
+          },
+          "vault_type": {
+            "const": "task"
+          }
+        },
+        "required": [
+          "vault_type",
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "area": {
+            "enum": [
+              "work"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "description": "Generated from vault-schema type_category_area. Enforces record envelope, vault_type/category validity, and category-specific allowed area values.",
+  "properties": {
+    "area": {
+      "enum": [
+        "home",
+        "self",
+        "social",
+        "work"
+      ],
+      "type": "string"
+    },
+    "body": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "category": {
+      "enum": [
+        "Hygiene",
+        "administratie",
+        "adoptie",
+        "appliances",
+        "article",
+        "attachment",
+        "baby",
+        "bloodpressure",
+        "boodschappen",
+        "book",
+        "bookmark",
+        "call",
+        "channel",
+        "chat",
+        "client",
+        "clothing",
+        "company",
+        "course",
+        "daily",
+        "electronics",
+        "eod",
+        "friendship",
+        "furniture",
+        "game",
+        "getrouwd",
+        "guide",
+        "hands",
+        "health",
+        "hobby",
+        "home",
+        "huisdieren",
+        "inbox",
+        "internal",
+        "intimate",
+        "irl",
+        "journal",
+        "kinderen",
+        "ledger",
+        "letter",
+        "log",
+        "mail",
+        "measurement",
+        "meeting",
+        "migraine",
+        "money",
+        "movie",
+        "note",
+        "nutrition",
+        "onderhoud",
+        "opruimen",
+        "other",
+        "overleden",
+        "person",
+        "personal",
+        "personal_care",
+        "pet",
+        "place",
+        "podcast",
+        "product",
+        "project",
+        "reflection",
+        "relaties",
+        "samenwonen",
+        "schoonmaken",
+        "screen",
+        "self",
+        "series",
+        "snapshot",
+        "social",
+        "sports",
+        "subscription",
+        "symptom",
+        "tool",
+        "validation",
+        "vehicle",
+        "verhuisd",
+        "verjaardag",
+        "verkering",
+        "video",
+        "weekly",
+        "weight",
+        "work",
+        "yearly"
+      ],
+      "type": "string"
+    },
+    "coverage_seed": {
+      "type": "boolean"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "evidence_ids": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "id": {
+      "pattern": "^note\\.synthetic\\.[0-9]{5}$",
+      "type": "string"
+    },
+    "privacy": {
+      "enum": [
+        "public",
+        "private",
+        "sensitive"
+      ],
+      "type": "string"
+    },
+    "record_type": {
+      "const": "note",
+      "description": "Technical JSONL record discriminator. Domain-specific subtype fields live on typed records such as entity_type, source_type, relation_type, task_type, claim_type, or vault_type."
+    },
+    "source_ids": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "summary": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true
+    },
+    "title": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "vault_type": {
+      "enum": [
+        "anniversary",
+        "chore",
+        "context",
+        "entity",
+        "entry",
+        "health",
+        "interaction",
+        "project",
+        "purchase",
+        "reference",
+        "task"
+      ],
+      "type": "string"
+    }
+  },
   "required": [
     "id",
     "record_type",
@@ -18,70 +2781,12 @@
     "created_at",
     "synthetic"
   ],
-  "properties": {
-    "id": {
-      "type": "string",
-      "pattern": "^note\\.synthetic\\.[0-9]{5}$"
-    },
-    "vault_type": {
-      "type": "string"
-    },
-    "category": {
-      "type": "string"
-    },
-    "area": {
-      "type": "string",
-      "enum": [
-        "home",
-        "self",
-        "social",
-        "work"
-      ]
-    },
-    "title": {
-      "type": "string",
-      "minLength": 1
-    },
-    "summary": {
-      "type": "string",
-      "minLength": 1
-    },
-    "body": {
-      "type": "string",
-      "minLength": 1
-    },
-    "privacy": {
-      "type": "string",
-      "enum": [
-        "public",
-        "private",
-        "sensitive"
-      ]
-    },
-    "source_ids": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "evidence_ids": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "created_at": {
-      "type": "string"
-    },
-    "synthetic": {
-      "const": true
-    },
-    "coverage_seed": {
-      "type": "boolean"
-    },
-    "record_type": {
-      "const": "note",
-      "description": "Technical JSONL record discriminator. Use domain-specific subtype fields where applicable, such as entity_type, source_type, relation_type, task_type, claim_type, or vault_type."
-    }
+  "title": "Synthetic vault note record",
+  "type": "object",
+  "x-vault-schema-source": {
+    "field": "type_category_area",
+    "type_category_pair_count": 88,
+    "type_count": 11,
+    "version": "9.4.1"
   }
 }

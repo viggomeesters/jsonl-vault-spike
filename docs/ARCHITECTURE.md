@@ -29,7 +29,15 @@ Every canonical record should have:
 
 ## Vault-schema coverage fixture
 
-`records/notes.jsonl` is a large synthetic fixture generated from the public `vault-schema` type/category matrix. It is intentionally not a copy of a real vault. The dataset proves that downstream validation, SQLite projection, bundle generation, and retrieval experiments can handle all schema categories at 10,000-record scale.
+`records/notes.jsonl` is a large synthetic fixture generated from the public `vault-schema` `type_category_area` matrix. It is intentionally not a copy of a real vault. The dataset proves that downstream validation, SQLite projection, bundle generation, and retrieval experiments can handle all schema categories at 10,000-record scale.
+
+`schema/note.schema.json` is generated from the same matrix. It enforces:
+
+- known `vault_type` values;
+- valid `category` values for each `vault_type`;
+- valid `area` values for each `vault_type/category` pair.
+
+That makes the POC strict for the schema matrix fields. It does not yet enforce deeper content-specific properties unless those properties are part of the public vault-schema contract.
 
 Generation contract:
 

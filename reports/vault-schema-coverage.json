@@ -114,5 +114,13 @@
     "reference": 1469,
     "task": 904
   },
+  "variant_schema": {
+    "all_of_rule_count": 99,
+    "enforces_area_per_vault_type_category": true,
+    "enforces_category_per_vault_type": true,
+    "enforces_vault_type_enum": true,
+    "expected_rule_count": 99,
+    "source": "schema/note.schema.json"
+  },
   "vault_schema_version_source": "../vault-schema/vault-schema.json"
 }

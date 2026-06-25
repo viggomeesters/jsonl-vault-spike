@@ -76,6 +76,7 @@ def make_record(idx: int, combo: dict, area: str, coverage_seed: bool) -> dict:
 
 def generate(count: int, schema_path: Path) -> tuple[list[dict], dict]:
     matrix = load_matrix(schema_path)
+    note_schema = write_note_schema(matrix, schema_path)
     if count < len(matrix):
         raise ValueError(f"count {count} is smaller than required coverage matrix {len(matrix)}")
     records = []
@@ -88,11 +89,11 @@ def generate(count: int, schema_path: Path) -> tuple[list[dict], dict]:
         area = combo["allowed_areas"][(idx - 1) % len(combo["allowed_areas"])]
         records.append(make_record(idx, combo, area, False))
         idx += 1
-    coverage = build_coverage(records, matrix, count)
+    coverage = build_coverage(records, matrix, count, note_schema)
     return records, coverage
 
 
-def build_coverage(records: list[dict], matrix: list[dict], count: int) -> dict:
+def build_coverage(records: list[dict], matrix: list[dict], count: int, note_schema: dict) -> dict:
     type_counts = Counter(r["vault_type"] for r in records)
     category_counts = Counter(f"{r['vault_type']}/{r['category']}" for r in records)
     area_counts = Counter(r["area"] for r in records)
@@ -107,11 +108,99 @@ def build_coverage(records: list[dict], matrix: list[dict], count: int) -> dict:
         "category_pair_count": len(category_counts),
         "expected_category_pair_count": len(expected_pairs),
         "missing_category_pairs": missing_pairs,
+        "variant_schema": {
+            "source": "schema/note.schema.json",
+            "enforces_vault_type_enum": True,
+            "enforces_category_per_vault_type": True,
+            "enforces_area_per_vault_type_category": True,
+            "all_of_rule_count": len(note_schema.get("allOf", [])),
+            "expected_rule_count": len(type_counts) + len(expected_pairs),
+        },
         "type_counts": dict(sorted(type_counts.items())),
         "area_counts": dict(sorted(area_counts.items())),
         "category_pair_counts": dict(sorted(category_counts.items())),
     }
 
+
+
+def build_note_schema(matrix: list[dict], schema_contract: dict) -> dict:
+    """Build the public note-record envelope plus vault-schema-derived variant constraints."""
+    vault_types = sorted({m["vault_type"] for m in matrix})
+    categories_by_type: dict[str, list[str]] = defaultdict(list)
+    all_categories = set()
+    all_areas = set()
+    pair_rules = []
+    for combo in matrix:
+        vault_type = combo["vault_type"]
+        category = combo["category"]
+        allowed_areas = sorted(combo["allowed_areas"])
+        categories_by_type[vault_type].append(category)
+        all_categories.add(category)
+        all_areas.update(allowed_areas)
+        pair_rules.append({
+            "if": {
+                "properties": {
+                    "vault_type": {"const": vault_type},
+                    "category": {"const": category},
+                },
+                "required": ["vault_type", "category"],
+            },
+            "then": {"properties": {"area": {"enum": allowed_areas}}},
+        })
+    type_rules = []
+    for vault_type in vault_types:
+        type_rules.append({
+            "if": {"properties": {"vault_type": {"const": vault_type}}, "required": ["vault_type"]},
+            "then": {"properties": {"category": {"enum": sorted(categories_by_type[vault_type])}}},
+        })
+    return {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "Synthetic vault note record",
+        "description": (
+            "Generated from vault-schema type_category_area. Enforces record envelope, "
+            "vault_type/category validity, and category-specific allowed area values."
+        ),
+        "type": "object",
+        "additionalProperties": False,
+        "required": [
+            "id", "record_type", "vault_type", "category", "area", "title", "summary",
+            "body", "privacy", "source_ids", "evidence_ids", "created_at", "synthetic",
+        ],
+        "properties": {
+            "id": {"type": "string", "pattern": "^note\\.synthetic\\.[0-9]{5}$"},
+            "record_type": {
+                "const": "note",
+                "description": "Technical JSONL record discriminator. Domain-specific subtype fields live on typed records such as entity_type, source_type, relation_type, task_type, claim_type, or vault_type.",
+            },
+            "vault_type": {"type": "string", "enum": vault_types},
+            "category": {"type": "string", "enum": sorted(all_categories)},
+            "area": {"type": "string", "enum": sorted(all_areas)},
+            "title": {"type": "string", "minLength": 1},
+            "summary": {"type": "string", "minLength": 1},
+            "body": {"type": "string", "minLength": 1},
+            "privacy": {"type": "string", "enum": ["public", "private", "sensitive"]},
+            "source_ids": {"type": "array", "items": {"type": "string"}},
+            "evidence_ids": {"type": "array", "items": {"type": "string"}},
+            "created_at": {"type": "string"},
+            "synthetic": {"const": True},
+            "coverage_seed": {"type": "boolean"},
+        },
+        "x-vault-schema-source": {
+            "version": schema_contract.get("version"),
+            "field": "type_category_area",
+            "type_count": len(vault_types),
+            "type_category_pair_count": len(matrix),
+        },
+        "allOf": type_rules + pair_rules,
+    }
+
+
+def write_note_schema(matrix: list[dict], schema_path: Path) -> dict:
+    schema_contract = json.loads(schema_path.read_text(encoding="utf-8"))
+    note_schema = build_note_schema(matrix, schema_contract)
+    out = ROOT / "schema" / "note.schema.json"
+    out.write_text(json.dumps(note_schema, indent=2, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
+    return note_schema
 
 def write_jsonl(path: Path, records: list[dict]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)

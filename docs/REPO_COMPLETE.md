@@ -12,7 +12,7 @@ Status: public-ready proof of concept.
 - Generated SQLite and Markdown views.
 - Package metadata and console script.
 - Embedded synthetic package dataset, so the installed CLI can validate outside a checkout.
-- 10,000 generated note records covering all 88 current vault-schema type/category pairs.
+- 10,000 generated note records covering all 88 current vault-schema type/category pairs, with generated schema constraints for vault_type/category/area validity.
 - Read-only real-vault evaluation plan in `docs/VAULT_EVALUATION.md`.
 - Governance docs and issue/PR routing.
 - Repository guard wired into `make check`.
