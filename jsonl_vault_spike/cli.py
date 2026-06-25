@@ -148,12 +148,12 @@ def build_sqlite(_args=None) -> int:
     if db.exists():
         db.unlink()
     con = sqlite3.connect(db)
-    con.execute("create table records(id text primary key, kind text not null, privacy text not null, summary text, json text not null)")
-    con.execute("create table relations(source_id text, type text, target_id text, json text not null)")
+    con.execute("create table records(id text primary key, record_type text not null, privacy text not null, summary text, json text not null)")
+    con.execute("create table relations(subject_id text, relation_type text, object_id text, json text not null)")
     for rec in load_records().values():
         con.execute("insert into records values(?,?,?,?,?)", (rec["id"], rec["record_type"], rec.get("privacy"), rec.get("summary") or rec.get("title") or rec.get("display_name"), json.dumps(rec, ensure_ascii=False, sort_keys=True)))
         if rec["record_type"] == "relation":
-            con.execute("insert into relations values(?,?,?,?)", (rec["source_id"], rec["type"], rec["target_id"], json.dumps(rec, ensure_ascii=False, sort_keys=True)))
+            con.execute("insert into relations values(?,?,?,?)", (rec["subject_id"], rec["relation_type"], rec["object_id"], json.dumps(rec, ensure_ascii=False, sort_keys=True)))
     con.commit(); con.close()
     print(f"built {db.relative_to(ROOT)}")
     return 0
@@ -211,9 +211,12 @@ def render_views(_args=None) -> int:
     rendered_notes = 0
     for rec in records.values():
         if rec["record_type"] == "project":
-            claims = [r for r in records.values() if r.get("subject_id") == rec["id"]]
+            claims = [r for r in records.values() if r.get("record_type") == "claim" and r.get("subject_id") == rec["id"]]
+            relations = [r for r in records.values() if r.get("record_type") == "relation" and r.get("subject_id") == rec["id"]]
             lines = [f"# {rec['title']}", "", rec["summary"], "", f"Status: `{rec['status']}`", "", "## Claims", ""]
             lines += [f"- {c['statement']} (confidence: {c['confidence']})" for c in claims] or ["- none"]
+            lines += ["", "## Relations", ""]
+            lines += [f"- {r['relation_type']}: {r['object_id']}" for r in relations] or ["- none"]
             (VIEWS / "projects" / f"{rec['id'].split('.')[-1]}.md").write_text("\n".join(lines)+"\n", encoding="utf-8")
         if rec["record_type"] == "entity":
             lines = [f"# {rec['display_name']}", "", rec["summary"], "", f"Privacy: `{rec['privacy']}`"]

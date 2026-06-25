@@ -24,9 +24,7 @@ Markdown note
 
 ## Naming convention
 
-Use `record_type` as the technical JSONL discriminator.
-
-Do not use a generic `kind` field. It is too vague and can be confused with vault `type`, entity subtype, or category.
+Use `record_type` as the technical JSONL discriminator. Avoid vague discriminator names that can be confused with vault `type`, entity subtype, or category.
 
 | Field | Meaning | Example |
 | --- | --- | --- |

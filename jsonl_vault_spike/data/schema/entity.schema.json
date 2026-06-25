@@ -4,7 +4,8 @@
     "record_type",
     "summary",
     "privacy",
-    "display_name"
+    "display_name",
+    "entity_type"
   ],
   "properties": {
     "id": {
@@ -39,7 +40,13 @@
     },
     "record_type": {
       "const": "entity",
-      "description": "Technical JSONL record discriminator. Use domain-specific fields such as entity_type, source_type, relation_type, task_type, or vault_type for subtypes."
+      "description": "Technical JSONL record discriminator. Use domain-specific subtype fields where applicable, such as entity_type, source_type, relation_type, task_type, claim_type, or vault_type."
+    },
+    "entity_type": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
     }
   },
   "$schema": "https://json-schema.org/draft/2020-12/schema",

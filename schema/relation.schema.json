@@ -2,10 +2,11 @@
   "required": [
     "id",
     "record_type",
-    "source_id",
-    "type",
-    "target_id",
-    "privacy"
+    "privacy",
+    "subject_id",
+    "relation_type",
+    "object_id",
+    "source_ids"
   ],
   "properties": {
     "id": {
@@ -23,15 +24,6 @@
         "sensitive"
       ]
     },
-    "source_id": {
-      "type": "string"
-    },
-    "type": {
-      "type": "string"
-    },
-    "target_id": {
-      "type": "string"
-    },
     "evidence_ids": {
       "type": "array",
       "items": {
@@ -40,7 +32,22 @@
     },
     "record_type": {
       "const": "relation",
-      "description": "Technical JSONL record discriminator. Use domain-specific fields such as entity_type, source_type, relation_type, task_type, or vault_type for subtypes."
+      "description": "Technical JSONL record discriminator. Use domain-specific subtype fields where applicable, such as entity_type, source_type, relation_type, task_type, claim_type, or vault_type."
+    },
+    "subject_id": {
+      "type": "string"
+    },
+    "relation_type": {
+      "type": "string"
+    },
+    "object_id": {
+      "type": "string"
+    },
+    "source_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     }
   },
   "$schema": "https://json-schema.org/draft/2020-12/schema",

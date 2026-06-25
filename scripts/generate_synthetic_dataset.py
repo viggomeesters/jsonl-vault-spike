@@ -119,6 +119,7 @@ def write_jsonl(path: Path, records: list[dict]) -> None:
 
 
 def sync_embedded_data() -> None:
+    normalize_demo_records()
     for sub in ["records", "schema", "raw", "retrieval", "evals"]:
         dst = EMBEDDED_DATA / sub
         if dst.exists():
@@ -130,6 +131,40 @@ def sync_embedded_data() -> None:
         "The repository root files remain the canonical editable demo dataset when running inside a checkout.\n",
         encoding="utf-8",
     )
+
+
+def normalize_demo_records() -> None:
+    """Keep hand-authored demo records aligned with the public record_type model."""
+    # The bulk generator owns notes.jsonl. Other small demo files are authored,
+    # but must keep subtype fields in sync before embedded package data is copied.
+    for path in (ROOT / "records").glob("*.jsonl"):
+        rows = []
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            if row.get("record_type") == "source":
+                row.setdefault("source_type", (row.get("locator") or {}).get("type", "synthetic"))
+            elif row.get("record_type") == "entity":
+                parts = row["id"].split(".")
+                row.setdefault("entity_type", parts[1] if len(parts) > 2 else "synthetic_entity")
+                row.setdefault("category", "synthetic_example")
+            elif row.get("record_type") == "task":
+                row.setdefault("task_type", "pilot")
+                row.setdefault("category", "migration")
+            elif row.get("record_type") == "claim":
+                row.setdefault("claim_type", "architecture")
+                row.setdefault("category", "migration")
+            elif row.get("record_type") == "relation":
+                if "source_id" in row:
+                    row["subject_id"] = row.pop("source_id")
+                if "target_id" in row:
+                    row["object_id"] = row.pop("target_id")
+                if "type" in row:
+                    row["relation_type"] = row.pop("type")
+                row.setdefault("source_ids", row.get("evidence_ids") or ["source.synthetic.seed"])
+            rows.append(row)
+        write_jsonl(path, rows)
 
 
 def assert_public_safe(records: list[dict]) -> None:

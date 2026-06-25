@@ -13,7 +13,7 @@
 Every canonical record should have:
 
 - stable `id`
-- `kind`
+- `record_type`
 - short `summary` or title
 - provenance through `source_ids` / `evidence_ids`
 - `privacy`

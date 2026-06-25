@@ -81,7 +81,7 @@
     },
     "record_type": {
       "const": "note",
-      "description": "Technical JSONL record discriminator. Use domain-specific fields such as entity_type, source_type, relation_type, task_type, or vault_type for subtypes."
+      "description": "Technical JSONL record discriminator. Use domain-specific subtype fields where applicable, such as entity_type, source_type, relation_type, task_type, claim_type, or vault_type."
     }
   }
 }

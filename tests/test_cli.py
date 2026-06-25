@@ -33,6 +33,23 @@ def test_sqlite_build_contains_records():
     con = sqlite3.connect(ROOT / "dist" / "context.sqlite")
     count = con.execute("select count(*) from records").fetchone()[0]
     assert count == 10015
+    columns = [row[1] for row in con.execute("pragma table_info(records)")]
+    assert "record_type" in columns
+    assert columns[:2] == ["id", "record_type"]
+    relation_columns = [row[1] for row in con.execute("pragma table_info(relations)")]
+    assert relation_columns[:3] == ["subject_id", "relation_type", "object_id"]
+
+
+def test_record_model_subtype_fields_match_schema():
+    entity = json.loads((ROOT / "records" / "entities.jsonl").read_text().splitlines()[0])
+    source = json.loads((ROOT / "records" / "sources.jsonl").read_text().splitlines()[0])
+    task = json.loads((ROOT / "records" / "tasks.jsonl").read_text().splitlines()[0])
+    relation = json.loads((ROOT / "records" / "relations.jsonl").read_text().splitlines()[0])
+    assert entity["entity_type"] == "person"
+    assert source["source_type"] == "repo"
+    assert task["task_type"] == "pilot"
+    assert {"subject_id", "relation_type", "object_id", "source_ids"}.issubset(relation)
+    assert {"source_id", "type", "target_id"}.isdisjoint(relation)
 
 
 def test_render_views_creates_project_view():
