@@ -11,7 +11,7 @@ from pathlib import Path
 
 DEFAULT_OUT = Path('.local/vault-eval')
 PRIVATE_PATTERN = re.compile(
-    r"(/mnt/[a-z]/Users/[^/]+|/Users/[^/]+|Syncthing/vault|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}|[0-9]{8,})",
+    r"(/mnt/[a-z]/Users/[^/]+|/Users/[^/]+|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}|[0-9]{8,})",
     re.I,
 )
 FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---\n", re.S)

@@ -1,0 +1,12 @@
+include README.md LICENSE CHANGELOG.md SUPPORT.md SECURITY.md CODE_OF_CONDUCT.md CONTRIBUTORS.md NOTICE.md AGENTS.md Makefile
+include scripts/*.py
+include tests/*.py
+recursive-include docs *.md
+recursive-include schema *.json
+recursive-include records *.jsonl
+recursive-include raw *.jsonl
+recursive-include retrieval *.jsonl
+recursive-include evals *.jsonl
+recursive-include reports *.json
+recursive-include assets *.svg
+recursive-include .github *.md *.yml
