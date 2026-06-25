@@ -58,7 +58,7 @@ def make_record(idx: int, combo: dict, area: str, coverage_seed: bool) -> dict:
     )
     return {
         "id": f"note.synthetic.{idx:05d}",
-        "kind": "note",
+        "record_type": "note",
         "vault_type": vault_type,
         "category": category,
         "area": area,

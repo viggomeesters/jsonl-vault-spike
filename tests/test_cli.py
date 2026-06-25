@@ -25,7 +25,7 @@ def test_bundle_contains_citations(tmp_path):
     bundle = json.loads(out.read_text())
     assert bundle["confidence"] == "medium"
     assert "source.synthetic.chat-001" in bundle["must_cite"]
-    assert any(item["kind"] == "claim" for item in bundle["items"])
+    assert any(item["record_type"] == "claim" for item in bundle["items"])
 
 
 def test_sqlite_build_contains_records():
@@ -49,7 +49,7 @@ def test_render_views_creates_note_views():
     assert len(note_views) == 10000
     sample = ROOT / "views" / "markdown" / "notes" / "anniversary" / "adoptie" / "00001.md"
     text = sample.read_text()
-    assert "kind: note" in text
+    assert "record_type: note" in text
     assert "vault_type: anniversary" in text
     assert "category: adoptie" in text
     assert "# Synthetic recurring date — adoptie #00001" in text

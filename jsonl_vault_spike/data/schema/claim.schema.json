@@ -1,7 +1,7 @@
 {
   "required": [
     "id",
-    "kind",
+    "record_type",
     "summary",
     "privacy",
     "subject_id",
@@ -13,9 +13,6 @@
     "id": {
       "type": "string",
       "pattern": "^[a-z]+(\\.[a-z0-9-]+)+$"
-    },
-    "kind": {
-      "const": "claim"
     },
     "summary": {
       "type": "string"
@@ -51,6 +48,10 @@
     },
     "freshness": {
       "type": "object"
+    },
+    "record_type": {
+      "const": "claim",
+      "description": "Technical JSONL record discriminator. Use domain-specific fields such as entity_type, source_type, relation_type, task_type, or vault_type for subtypes."
     }
   },
   "$schema": "https://json-schema.org/draft/2020-12/schema",

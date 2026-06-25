@@ -105,7 +105,7 @@ def search_records(query: str) -> list[dict]:
 
 def query(args) -> int:
     for rec in search_records(" ".join(args.terms))[: args.limit]:
-        print(f"{rec['id']} [{rec['kind']}] {rec.get('title') or rec.get('display_name') or rec.get('summary')}")
+        print(f"{rec['id']} [{rec['record_type']}] {rec.get('title') or rec.get('display_name') or rec.get('summary')}")
     return 0
 
 
@@ -151,8 +151,8 @@ def build_sqlite(_args=None) -> int:
     con.execute("create table records(id text primary key, kind text not null, privacy text not null, summary text, json text not null)")
     con.execute("create table relations(source_id text, type text, target_id text, json text not null)")
     for rec in load_records().values():
-        con.execute("insert into records values(?,?,?,?,?)", (rec["id"], rec["kind"], rec.get("privacy"), rec.get("summary") or rec.get("title") or rec.get("display_name"), json.dumps(rec, ensure_ascii=False, sort_keys=True)))
-        if rec["kind"] == "relation":
+        con.execute("insert into records values(?,?,?,?,?)", (rec["id"], rec["record_type"], rec.get("privacy"), rec.get("summary") or rec.get("title") or rec.get("display_name"), json.dumps(rec, ensure_ascii=False, sort_keys=True)))
+        if rec["record_type"] == "relation":
             con.execute("insert into relations values(?,?,?,?)", (rec["source_id"], rec["type"], rec["target_id"], json.dumps(rec, ensure_ascii=False, sort_keys=True)))
     con.commit(); con.close()
     print(f"built {db.relative_to(ROOT)}")
@@ -165,7 +165,7 @@ def markdown_escape(value: str) -> str:
 
 def frontmatter(rec: dict) -> str:
     lines = ["---"]
-    for key in ["id", "kind", "vault_type", "category", "area", "privacy", "created_at", "synthetic", "coverage_seed"]:
+    for key in ["id", "record_type", "vault_type", "category", "area", "privacy", "created_at", "synthetic", "coverage_seed"]:
         if key in rec:
             value = rec[key]
             if isinstance(value, bool):
@@ -210,15 +210,15 @@ def render_views(_args=None) -> int:
             old.unlink()
     rendered_notes = 0
     for rec in records.values():
-        if rec["kind"] == "project":
+        if rec["record_type"] == "project":
             claims = [r for r in records.values() if r.get("subject_id") == rec["id"]]
             lines = [f"# {rec['title']}", "", rec["summary"], "", f"Status: `{rec['status']}`", "", "## Claims", ""]
             lines += [f"- {c['statement']} (confidence: {c['confidence']})" for c in claims] or ["- none"]
             (VIEWS / "projects" / f"{rec['id'].split('.')[-1]}.md").write_text("\n".join(lines)+"\n", encoding="utf-8")
-        if rec["kind"] == "entity":
+        if rec["record_type"] == "entity":
             lines = [f"# {rec['display_name']}", "", rec["summary"], "", f"Privacy: `{rec['privacy']}`"]
             (VIEWS / "entities" / f"{rec['id'].split('.')[-1]}.md").write_text("\n".join(lines)+"\n", encoding="utf-8")
-        if rec["kind"] == "note":
+        if rec["record_type"] == "note":
             type_dir = VIEWS / "notes" / rec["vault_type"] / rec["category"]
             type_dir.mkdir(parents=True, exist_ok=True)
             (type_dir / f"{rec['id'].split('.')[-1]}.md").write_text(render_note_view(rec), encoding="utf-8")

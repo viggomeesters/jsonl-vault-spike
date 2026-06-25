@@ -98,6 +98,10 @@ Agents should treat `records/*.jsonl` as the source of truth and use generated b
 4. cite `source` / `evidence` records before making claims;
 5. regenerate views and SQLite after canonical records change.
 
+## Record model
+
+The examples use `record_type` as the technical discriminator instead of a vague `kind` field. Domain-specific subtypes remain explicit, for example `entity_type`, `source_type`, `relation_type`, `task_type`, and `vault_type`. See [`docs/RECORD_MODEL.md`](docs/RECORD_MODEL.md) for the practical migration model: Markdown notes become source/entity/relation/claim/task records with stable IDs and references, then Markdown views are regenerated from JSONL.
+
 ## Testing against a real Obsidian vault
 
 Use [`docs/VAULT_EVALUATION.md`](docs/VAULT_EVALUATION.md) for the read-only, private dry-run protocol. The public repo stays synthetic; real-vault evaluation output belongs under `.local/` or `/tmp/` and must not be committed.

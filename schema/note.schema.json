@@ -5,7 +5,7 @@
   "additionalProperties": false,
   "required": [
     "id",
-    "kind",
+    "record_type",
     "vault_type",
     "category",
     "area",
@@ -22,9 +22,6 @@
     "id": {
       "type": "string",
       "pattern": "^note\\.synthetic\\.[0-9]{5}$"
-    },
-    "kind": {
-      "const": "note"
     },
     "vault_type": {
       "type": "string"
@@ -81,6 +78,10 @@
     },
     "coverage_seed": {
       "type": "boolean"
+    },
+    "record_type": {
+      "const": "note",
+      "description": "Technical JSONL record discriminator. Use domain-specific fields such as entity_type, source_type, relation_type, task_type, or vault_type for subtypes."
     }
   }
 }

@@ -8,6 +8,7 @@ Status: public-ready proof of concept.
 - Hero prompt/provenance saved in `docs/HERO_PROMPT.md`.
 - Synthetic-only data boundary.
 - JSONL record schemas and validator.
+- Explicit `record_type` JSONL model documented in `docs/RECORD_MODEL.md`.
 - Generated SQLite and Markdown views.
 - Package metadata and console script.
 - Embedded synthetic package dataset, so the installed CLI can validate outside a checkout.
