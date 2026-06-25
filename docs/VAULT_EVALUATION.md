@@ -32,6 +32,18 @@ A JSONL-first vault is better only if it beats Markdown on measurable agent task
 
 Run a local-only script against a bounded subset of the vault. The first slice should be small and representative:
 
+```bash
+python3 scripts/evaluate_obsidian_vault.py --vault /path/to/local/vault --limit 75 --out .local/vault-eval
+```
+
+The script writes a styled local report to:
+
+```text
+.local/vault-eval/value-prop-comparison.html
+```
+
+That HTML is intentionally local-only and ignored by git.
+
 - 10–25 project notes;
 - 10–25 source/reference notes;
 - 10–25 task/entry notes;

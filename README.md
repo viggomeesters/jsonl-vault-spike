@@ -102,6 +102,14 @@ Agents should treat `records/*.jsonl` as the source of truth and use generated b
 
 Use [`docs/VAULT_EVALUATION.md`](docs/VAULT_EVALUATION.md) for the read-only, private dry-run protocol. The public repo stays synthetic; real-vault evaluation output belongs under `.local/` or `/tmp/` and must not be committed.
 
+Local aggregate comparison:
+
+```bash
+python3 scripts/evaluate_obsidian_vault.py --vault /path/to/local/vault --limit 75 --out .local/vault-eval
+```
+
+This writes `aggregate-metrics.json`, `scorecard.json`, and `value-prop-comparison.html` under `.local/vault-eval/`. The report contains counts and percentages only: no note titles, paths, body text, names, or screenshots.
+
 ## Verification
 
 Full local gate:

@@ -14,7 +14,7 @@ ALLOWED_GUARD_FILES = {"scripts/validate_repository.py", "scripts/generate_synth
 REQUIRED_PATHS = [
     "README.md", "LICENSE", "CHANGELOG.md", "SUPPORT.md", "SECURITY.md", "CODE_OF_CONDUCT.md",
     "CONTRIBUTORS.md", "NOTICE.md", "AGENTS.md", "Makefile", "pyproject.toml",
-    "scripts/generate_synthetic_dataset.py", "reports/vault-schema-coverage.json", "schema/note.schema.json", "records/notes.jsonl",
+    "scripts/generate_synthetic_dataset.py", "scripts/evaluate_obsidian_vault.py", "reports/vault-schema-coverage.json", "schema/note.schema.json", "records/notes.jsonl",
     "assets/jsonl-vault-spike-hero.svg", "docs/ARCHITECTURE.md", "docs/ROADMAP.md",
     "docs/PACKAGE.md", "docs/HERO_PROMPT.md", "docs/VAULT_EVALUATION.md", "docs/MAINTAINER_CHECKLIST.md", "docs/REPO_COMPLETE.md",
     ".github/pull_request_template.md", ".github/ISSUE_TEMPLATE/config.yml",
