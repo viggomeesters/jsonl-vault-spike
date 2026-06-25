@@ -149,7 +149,6 @@ def main() -> int:
         if len(files) >= args.limit:
             break
     metrics = Counter()
-    categories = Counter()
     for path in files:
         try:
             text = path.read_text(encoding='utf-8', errors='replace')
@@ -164,7 +163,6 @@ def main() -> int:
             metrics['notes_with_type'] += 1
         if 'category' in fm:
             metrics['notes_with_category'] += 1
-            categories[fm.get('category','')] += 1
         if SOURCE_HINT_RE.search(text) or any(k in fm for k in ['source','sources','url','evidence']):
             metrics['notes_with_source_hint'] += 1
         if TASK_RE.search(text):
@@ -178,7 +176,8 @@ def main() -> int:
     result['vault_root_redacted'] = '[REDACTED_LOCAL_VAULT]'
     result['sample_limit'] = args.limit
     result['generated_at'] = datetime.now(timezone.utc).isoformat()
-    result['top_categories_redacted_counts'] = dict(categories.most_common(12))
+    # Intentionally do not include raw category/type values in local reports.
+    # Real vault categories can be personal taxonomy and must not leak via JSON/HTML.
     card = scorecard(result)
     out = args.out
     out.mkdir(parents=True, exist_ok=True)

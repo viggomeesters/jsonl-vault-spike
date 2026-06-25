@@ -14,8 +14,9 @@ def test_evaluate_obsidian_vault_writes_aggregate_only_outputs(tmp_path):
     vault.mkdir()
     private_title = "PRIVATE_TITLE_SHOULD_NOT_LEAK"
     private_body = "PRIVATE_BODY_SHOULD_NOT_LEAK"
+    private_category = "PRIVATE_CATEGORY_SHOULD_NOT_LEAK"
     (vault / "note.md").write_text(
-        "---\ntype: project\ncategory: demo\n---\n"
+        f"---\ntype: project\ncategory: {private_category}\n---\n"
         f"# {private_title}\n"
         f"{private_body}\n"
         "[[Some Link]]\n"
@@ -41,5 +42,6 @@ def test_evaluate_obsidian_vault_writes_aggregate_only_outputs(tmp_path):
     combined = json.dumps(metrics) + html + (out / "scorecard.json").read_text()
     assert private_title not in combined
     assert private_body not in combined
+    assert private_category not in combined
     assert str(vault) not in combined
     assert "[REDACTED_LOCAL_VAULT]" in combined
