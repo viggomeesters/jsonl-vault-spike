@@ -1,0 +1,29 @@
+{
+  "attachments_by_status": {
+    "found": 3
+  },
+  "binary_payloads_in_jsonl": false,
+  "counts": {
+    "attachments": 3,
+    "files": 3,
+    "media_assets": 2,
+    "media_links": 3,
+    "total_file_bytes": 175
+  },
+  "files_by_mime_type": {
+    "application/pdf": 1,
+    "image/png": 1,
+    "text/csv": 1
+  },
+  "media_assets_by_type": {
+    "image": 1,
+    "pdf": 1
+  },
+  "media_links_by_status": {
+    "found": 2,
+    "missing": 1
+  },
+  "privacy_note": "Report is aggregate-only: no local paths, filenames from private sources, OCR text, transcripts, thumbnails, or real media content.",
+  "semantic_media_extraction": "proposal-only future work; not implemented",
+  "synthetic_only": true
+}

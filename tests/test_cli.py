@@ -17,7 +17,7 @@ def run(*args):
 def test_validate_records():
     result = run("validate")
     assert "OK: validated" in result.stdout
-    assert "10020 records across 11 JSONL files" in result.stdout
+    assert "10026 records across 12 JSONL files" in result.stdout
 
 
 def test_bundle_contains_citations(tmp_path):
@@ -33,7 +33,7 @@ def test_sqlite_build_contains_records():
     run("build-sqlite")
     con = sqlite3.connect(ROOT / "dist" / "context.sqlite")
     count = con.execute("select count(*) from records").fetchone()[0]
-    assert count == 10020
+    assert count == 10026
     columns = [row[1] for row in con.execute("pragma table_info(records)")]
     assert "record_type" in columns
     assert columns[:2] == ["id", "record_type"]
@@ -54,18 +54,53 @@ def test_record_model_subtype_fields_match_schema():
 
 
 def test_media_file_records_are_metadata_only_and_public_safe():
-    file_rec = json.loads((ROOT / "records" / "files.jsonl").read_text().splitlines()[0])
-    asset_rec = json.loads((ROOT / "records" / "media_assets.jsonl").read_text().splitlines()[0])
-    link_rec = json.loads((ROOT / "records" / "media_links.jsonl").read_text().splitlines()[0])
+    files = [json.loads(line) for line in (ROOT / "records" / "files.jsonl").read_text().splitlines()]
+    attachments = [json.loads(line) for line in (ROOT / "records" / "attachments.jsonl").read_text().splitlines()]
+    assets = [json.loads(line) for line in (ROOT / "records" / "media_assets.jsonl").read_text().splitlines()]
+    links = [json.loads(line) for line in (ROOT / "records" / "media_links.jsonl").read_text().splitlines()]
+    assert len(files) == 3
+    assert len(attachments) == 3
+    assert len(assets) == 2
+    assert len(links) == 3
+    file_rec = files[0]
+    asset_rec = assets[0]
+    link_rec = links[0]
     assert file_rec["record_type"] == "file"
     assert file_rec["storage_ref"].startswith("blob://sha256/")
     assert file_rec["sha256"] in file_rec["storage_ref"]
+    assert file_rec["object_path"].startswith("objects/sha256/")
+    assert (ROOT / file_rec["object_path"]).exists()
     assert {"content", "content_b64", "content_bytes", "path"}.isdisjoint(file_rec)
     assert asset_rec["record_type"] == "media_asset"
     assert asset_rec["file_id"] == file_rec["id"]
     assert link_rec["record_type"] == "media_link"
     assert link_rec["target_id"] == asset_rec["id"]
     assert link_rec["resolution_status"] == "found"
+    assert any(link["resolution_status"] == "missing" and "target_id" not in link for link in links)
+
+
+def test_verify_objects_checks_content_addressed_fixtures():
+    result = run("verify-objects")
+    assert "OK: verified 3 content-addressed synthetic objects" in result.stdout
+
+
+def test_render_media_report_is_aggregate_only():
+    result = run("render-media-report")
+    assert "reports/media-mvp-summary.json" in result.stdout
+    report = json.loads((ROOT / "reports" / "media-mvp-summary.json").read_text())
+    assert report["synthetic_only"] is True
+    assert report["binary_payloads_in_jsonl"] is False
+    assert report["counts"] == {
+        "attachments": 3,
+        "files": 3,
+        "media_assets": 2,
+        "media_links": 3,
+        "total_file_bytes": report["counts"]["total_file_bytes"],
+    }
+    assert report["media_links_by_status"] == {"found": 2, "missing": 1}
+    report_text = json.dumps(report)
+    assert "/home/" not in report_text
+    assert "content_b64" not in report_text
 
 
 def test_sqlite_build_contains_media_tables():
@@ -73,8 +108,12 @@ def test_sqlite_build_contains_media_tables():
     con = sqlite3.connect(ROOT / "dist" / "context.sqlite")
     media_links = con.execute("select count(*) from media_links").fetchone()[0]
     files = con.execute("select count(*) from files").fetchone()[0]
-    assert media_links == 2
-    assert files == 2
+    attachments = con.execute("select count(*) from attachments").fetchone()[0]
+    media_assets = con.execute("select count(*) from media_assets").fetchone()[0]
+    assert media_links == 3
+    assert files == 3
+    assert attachments == 3
+    assert media_assets == 2
 
 
 def test_inspect_synthetic_media_metadata(tmp_path):
@@ -96,6 +135,16 @@ def test_render_views_creates_project_view():
     view = ROOT / "views" / "markdown" / "projects" / "vault-migration.md"
     assert view.exists()
     assert "Agent-first vault migration" in view.read_text()
+
+
+def test_render_views_creates_media_and_attachment_indexes():
+    result = run("render-views")
+    assert "2 media assets" in result.stdout
+    assert "3 attachments" in result.stdout
+    media = ROOT / "views" / "markdown" / "media" / "index.md"
+    attachments = ROOT / "views" / "markdown" / "attachments" / "index.md"
+    assert "media.synthetic.image-alpha" in media.read_text()
+    assert "attachment.synthetic.001" in attachments.read_text()
 
 
 def test_render_views_creates_note_views():
@@ -122,7 +171,7 @@ def test_module_cli_validates_from_outside_checkout(tmp_path):
         capture_output=True,
         check=True,
     )
-    assert "OK: validated 10020 records across 11 JSONL files" in result.stdout
+    assert "OK: validated 10026 records across 12 JSONL files" in result.stdout
 
 
 def test_generated_dataset_covers_vault_schema_matrix():
@@ -161,3 +210,17 @@ def test_note_schema_rejects_invalid_vault_schema_variants():
 
     wrong_type = dict(record, vault_type="not-a-vault-type")
     assert list(validator.iter_errors(wrong_type)), "unknown vault_type must be rejected"
+
+
+def test_media_link_schema_requires_target_only_for_found_links():
+    schema = json.loads((ROOT / "schema" / "media_link.schema.json").read_text())
+    validator = Draft202012Validator(schema)
+    found_link = json.loads((ROOT / "records" / "media_links.jsonl").read_text().splitlines()[0])
+    missing_link = next(json.loads(line) for line in (ROOT / "records" / "media_links.jsonl").read_text().splitlines() if '"resolution_status":"missing"' in line)
+    assert list(validator.iter_errors(found_link)) == []
+    assert list(validator.iter_errors(missing_link)) == []
+    found_without_target = dict(found_link)
+    found_without_target.pop("target_id")
+    assert list(validator.iter_errors(found_without_target)), "found media links must resolve to a target_id"
+    missing_with_target = dict(missing_link, target_id="media.synthetic.fake")
+    assert list(validator.iter_errors(missing_with_target)), "missing media links must not fake a target_id"

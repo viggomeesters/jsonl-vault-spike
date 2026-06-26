@@ -24,14 +24,15 @@ Markdown notes are good for humans but weak as an agent source of truth: links a
 
 **No real personal data.**
 
-This repository intentionally uses synthetic examples only. Do not add real vault exports, names, messages, emails, file paths, credentials, screenshots, or attachments.
+This repository intentionally uses synthetic examples only. Do not add real vault exports, real names, messages, emails, file paths, credentials, screenshots, or real attachments. The checked-in media fixtures are tiny synthetic files used only to prove content-addressed storage and validation.
 
 ## Repository map
 
 | Path | Role | Canonical? |
 | --- | --- | --- |
 | `raw/*.jsonl` | Synthetic source evidence | input |
-| `records/*.jsonl` | Typed records: entities, projects, claims, relations, tasks, decisions, files/media, plus 10,000 synthetic note records | yes |
+| `records/*.jsonl` | Typed records: entities, projects, claims, relations, tasks, decisions, files, attachments, media links, plus 10,000 synthetic note records | yes |
+| `objects/sha256/` | Tiny synthetic content-addressed object fixtures used for hash/integrity tests | fixture input |
 | `schema/*.schema.json` | JSON Schema contracts per record type | yes |
 | `retrieval/*.jsonl` | Query hints for agents | yes |
 | `evals/*.jsonl` | Retrieval expectations | yes |
@@ -58,12 +59,24 @@ python3 scripts/generate_synthetic_dataset.py --count 10000
 python3 scripts/vaultctx.py validate
 python3 scripts/vaultctx.py query vault migration
 python3 scripts/vaultctx.py bundle --goal "replace markdown with jsonl"
+python3 scripts/vaultctx.py verify-objects
+python3 scripts/vaultctx.py render-media-report
 python3 scripts/vaultctx.py build-sqlite
 python3 scripts/vaultctx.py render-views
-python3 scripts/vaultctx.py inspect-media --path /tmp/synthetic.png
+python3 scripts/vaultctx.py inspect-media --path objects/sha256/<prefix>/<sha256>.png
 ```
 
-Media/file support is metadata-only in the public spike: `file` records point at synthetic `blob://sha256/...` refs, `media_asset` records describe derived media metadata, and `media_link` records connect note/source records to media. No binary payloads, real filenames, screenshots, OCR text, transcripts, or thumbnails are committed.
+Media/file support is a complete synthetic MVP slice:
+
+- `objects/sha256/` contains three tiny synthetic fixtures: PNG, PDF, and CSV;
+- `records/files.jsonl` stores content hashes, MIME type, byte size, and synthetic blob refs;
+- `records/attachments.jsonl` stores note/source attachment occurrences;
+- `records/media_assets.jsonl` stores media metadata derived from files;
+- `records/media_links.jsonl` stores resolved and missing media references;
+- `verify-objects` proves file records match object bytes by SHA-256 and size;
+- `render-media-report` writes an aggregate-only media summary.
+
+No real filenames, real attachments, local paths, screenshots, OCR text, transcripts, thumbnails, or base64 payloads are committed.
 
 Install as a package:
 
@@ -133,8 +146,10 @@ python3 -m py_compile jsonl_vault_spike/*.py scripts/*.py tests/*.py
 
 - repository guard for public-data safety and required public files;
 - JSONL record validation;
+- content-addressed synthetic object hash validation;
 - tests;
 - SQLite build;
+- aggregate media report rendering;
 - Markdown view rendering;
 - demo bundle generation.
 

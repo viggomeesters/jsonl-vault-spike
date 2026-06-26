@@ -1,8 +1,8 @@
 PYTHON ?= python3
 
-.PHONY: check generate validate test build-sqlite render-views bundle clean
+.PHONY: check generate validate verify-objects test build-sqlite render-media-report render-views bundle clean
 
-check: repo-guard validate test build-sqlite render-views bundle
+check: repo-guard validate verify-objects test build-sqlite render-media-report render-views bundle
 
 generate:
 	$(PYTHON) scripts/generate_synthetic_dataset.py --count 10000
@@ -13,11 +13,17 @@ repo-guard:
 validate:
 	$(PYTHON) scripts/vaultctx.py validate
 
+verify-objects:
+	$(PYTHON) scripts/vaultctx.py verify-objects
+
 test:
 	$(PYTHON) -m pytest -q
 
 build-sqlite:
 	$(PYTHON) scripts/vaultctx.py build-sqlite
+
+render-media-report:
+	$(PYTHON) scripts/vaultctx.py render-media-report
 
 render-views:
 	$(PYTHON) scripts/vaultctx.py render-views

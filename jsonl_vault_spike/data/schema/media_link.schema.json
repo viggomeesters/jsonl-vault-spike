@@ -7,7 +7,6 @@
     "record_type",
     "privacy",
     "source_id",
-    "target_id",
     "link_type",
     "resolution_status",
     "source_ids",
@@ -27,5 +26,15 @@
     "source_ids": {"type": "array", "items": {"type": "string"}},
     "created_at": {"type": "string"},
     "synthetic": {"type": "boolean"}
-  }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"resolution_status": {"const": "found"}}, "required": ["resolution_status"]},
+      "then": {"required": ["target_id"]}
+    },
+    {
+      "if": {"properties": {"resolution_status": {"const": "missing"}}, "required": ["resolution_status"]},
+      "then": {"not": {"required": ["target_id"]}}
+    }
+  ]
 }

@@ -15,7 +15,9 @@ else:
     DATA_ROOT = EMBEDDED_DATA
 RECORDS = DATA_ROOT / "records"
 SCHEMA = DATA_ROOT / "schema"
+OBJECTS = DATA_ROOT / "objects" / "sha256"
 DIST = ROOT / "dist"
+REPORTS = ROOT / "reports"
 VIEWS = ROOT / "views" / "markdown"
 PRIVATE_PATTERNS = ["/Users/", "/mnt/c/Users/", "iCloud~md~obsidian", "Syncthing/vault", "@gmail.com", "@icloud.com"]
 SCHEMA_BY_FILE = {
@@ -27,6 +29,7 @@ SCHEMA_BY_FILE = {
     "tasks.jsonl": "task.schema.json",
     "decisions.jsonl": "decision.schema.json",
     "notes.jsonl": "note.schema.json",
+    "attachments.jsonl": "attachment.schema.json",
     "files.jsonl": "file.schema.json",
     "media_assets.jsonl": "media_asset.schema.json",
     "media_links.jsonl": "media_link.schema.json",
@@ -154,6 +157,8 @@ def build_sqlite(_args=None) -> int:
     con.execute("create table records(id text primary key, record_type text not null, privacy text not null, summary text, json text not null)")
     con.execute("create table relations(subject_id text, relation_type text, object_id text, json text not null)")
     con.execute("create table files(id text primary key, sha256 text not null, mime_type text not null, size_bytes integer not null, storage_ref text not null, json text not null)")
+    con.execute("create table attachments(id text primary key, source_id text not null, file_id text not null, attachment_type text not null, resolution_status text not null, json text not null)")
+    con.execute("create table media_assets(id text primary key, file_id text not null, media_type text not null, mime_type text not null, json text not null)")
     con.execute("create table media_links(source_id text not null, target_id text not null, link_type text not null, resolution_status text not null, json text not null)")
     for rec in load_records().values():
         con.execute("insert into records values(?,?,?,?,?)", (rec["id"], rec["record_type"], rec.get("privacy"), rec.get("summary") or rec.get("title") or rec.get("display_name"), json.dumps(rec, ensure_ascii=False, sort_keys=True)))
@@ -161,8 +166,12 @@ def build_sqlite(_args=None) -> int:
             con.execute("insert into relations values(?,?,?,?)", (rec["subject_id"], rec["relation_type"], rec["object_id"], json.dumps(rec, ensure_ascii=False, sort_keys=True)))
         if rec["record_type"] == "file":
             con.execute("insert into files values(?,?,?,?,?,?)", (rec["id"], rec["sha256"], rec["mime_type"], rec["size_bytes"], rec["storage_ref"], json.dumps(rec, ensure_ascii=False, sort_keys=True)))
+        if rec["record_type"] == "attachment":
+            con.execute("insert into attachments values(?,?,?,?,?,?)", (rec["id"], rec["source_id"], rec["file_id"], rec["attachment_type"], rec["resolution_status"], json.dumps(rec, ensure_ascii=False, sort_keys=True)))
+        if rec["record_type"] == "media_asset":
+            con.execute("insert into media_assets values(?,?,?,?,?)", (rec["id"], rec["file_id"], rec["media_type"], rec["mime_type"], json.dumps(rec, ensure_ascii=False, sort_keys=True)))
         if rec["record_type"] == "media_link":
-            con.execute("insert into media_links values(?,?,?,?,?)", (rec["source_id"], rec["target_id"], rec["link_type"], rec["resolution_status"], json.dumps(rec, ensure_ascii=False, sort_keys=True)))
+            con.execute("insert into media_links values(?,?,?,?,?)", (rec["source_id"], rec.get("target_id", ""), rec["link_type"], rec["resolution_status"], json.dumps(rec, ensure_ascii=False, sort_keys=True)))
     con.commit(); con.close()
     print(f"built {db.relative_to(ROOT)}")
     return 0
@@ -213,7 +222,7 @@ def render_note_view(rec: dict) -> str:
 
 def render_views(_args=None) -> int:
     records = load_records()
-    for sub in [VIEWS / "projects", VIEWS / "entities", VIEWS / "notes"]:
+    for sub in [VIEWS / "projects", VIEWS / "entities", VIEWS / "notes", VIEWS / "media", VIEWS / "attachments"]:
         sub.mkdir(parents=True, exist_ok=True)
         for old in sub.rglob("*.md"):
             old.unlink()
@@ -235,7 +244,15 @@ def render_views(_args=None) -> int:
             type_dir.mkdir(parents=True, exist_ok=True)
             (type_dir / f"{rec['id'].split('.')[-1]}.md").write_text(render_note_view(rec), encoding="utf-8")
             rendered_notes += 1
-    print(f"rendered markdown views ({rendered_notes} note views)")
+    media_assets = [r for r in records.values() if r.get("record_type") == "media_asset"]
+    attachments = [r for r in records.values() if r.get("record_type") == "attachment"]
+    media_lines = ["# Synthetic media assets", "", "| id | media_type | file_id | summary |", "| --- | --- | --- | --- |"]
+    media_lines += [f"| `{markdown_escape(r['id'])}` | `{markdown_escape(r['media_type'])}` | `{markdown_escape(r['file_id'])}` | {markdown_escape(r.get('summary', ''))} |" for r in sorted(media_assets, key=lambda x: x["id"])] or ["| none | | | |"]
+    (VIEWS / "media" / "index.md").write_text("\n".join(media_lines)+"\n", encoding="utf-8")
+    attachment_lines = ["# Synthetic attachment occurrences", "", "| id | source_id | file_id | status |", "| --- | --- | --- | --- |"]
+    attachment_lines += [f"| `{markdown_escape(r['id'])}` | `{markdown_escape(r['source_id'])}` | `{markdown_escape(r['file_id'])}` | `{markdown_escape(r['resolution_status'])}` |" for r in sorted(attachments, key=lambda x: x["id"])] or ["| none | | | |"]
+    (VIEWS / "attachments" / "index.md").write_text("\n".join(attachment_lines)+"\n", encoding="utf-8")
+    print(f"rendered markdown views ({rendered_notes} note views, {len(media_assets)} media assets, {len(attachments)} attachments)")
     return 0
 
 
@@ -284,6 +301,73 @@ def inspect_media(args) -> int:
     print(json.dumps(out, sort_keys=True))
     return 0
 
+
+def verify_objects(_args=None) -> int:
+    records = load_records()
+    errors = []
+    checked = 0
+    for rec in records.values():
+        if rec.get("record_type") != "file":
+            continue
+        object_path = rec.get("object_path")
+        if not object_path:
+            errors.append(f"{rec['id']}: missing object_path")
+            continue
+        if object_path.startswith("/") or ".." in Path(object_path).parts:
+            errors.append(f"{rec['id']}: unsafe object_path {object_path!r}")
+            continue
+        path = DATA_ROOT / object_path
+        if not path.exists():
+            errors.append(f"{rec['id']}: missing object {object_path}")
+            continue
+        digest = sha256_file(path)
+        if digest != rec.get("sha256"):
+            errors.append(f"{rec['id']}: sha256 mismatch {digest} != {rec.get('sha256')}")
+        if path.stat().st_size != rec.get("size_bytes"):
+            errors.append(f"{rec['id']}: size mismatch {path.stat().st_size} != {rec.get('size_bytes')}")
+        checked += 1
+    if errors:
+        for err in errors:
+            print(f"FAIL: {err}")
+        return 1
+    print(f"OK: verified {checked} content-addressed synthetic objects")
+    return 0
+
+
+def render_media_report(_args=None) -> int:
+    records = load_records()
+    REPORTS.mkdir(exist_ok=True)
+    files = [r for r in records.values() if r.get("record_type") == "file"]
+    attachments = [r for r in records.values() if r.get("record_type") == "attachment"]
+    media_assets = [r for r in records.values() if r.get("record_type") == "media_asset"]
+    media_links = [r for r in records.values() if r.get("record_type") == "media_link"]
+    def counts(rows, key):
+        out = defaultdict(int)
+        for row in rows:
+            out[row.get(key, "unknown")] += 1
+        return dict(sorted(out.items()))
+    report = {
+        "synthetic_only": True,
+        "binary_payloads_in_jsonl": False,
+        "semantic_media_extraction": "proposal-only future work; not implemented",
+        "counts": {
+            "files": len(files),
+            "attachments": len(attachments),
+            "media_assets": len(media_assets),
+            "media_links": len(media_links),
+            "total_file_bytes": sum(r.get("size_bytes", 0) for r in files),
+        },
+        "files_by_mime_type": counts(files, "mime_type"),
+        "attachments_by_status": counts(attachments, "resolution_status"),
+        "media_links_by_status": counts(media_links, "resolution_status"),
+        "media_assets_by_type": counts(media_assets, "media_type"),
+        "privacy_note": "Report is aggregate-only: no local paths, filenames from private sources, OCR text, transcripts, thumbnails, or real media content.",
+    }
+    out = REPORTS / "media-mvp-summary.json"
+    out.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print(f"wrote {out.relative_to(ROOT)}")
+    return 0
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="Synthetic JSONL vault/context MVP CLI")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -291,10 +375,12 @@ def main(argv=None) -> int:
     q = sub.add_parser("query"); q.add_argument("terms", nargs="+"); q.add_argument("--limit", type=int, default=10)
     b = sub.add_parser("bundle"); b.add_argument("--goal", required=True); b.add_argument("--limit", type=int, default=8); b.add_argument("--output")
     sub.add_parser("build-sqlite")
+    sub.add_parser("verify-objects")
+    sub.add_parser("render-media-report")
     sub.add_parser("render-views")
     im = sub.add_parser("inspect-media"); im.add_argument("--path", required=True); im.add_argument("--max-size-bytes", type=int, default=1_000_000)
     args = parser.parse_args(argv)
-    return {"validate": validate, "query": query, "bundle": bundle, "build-sqlite": build_sqlite, "render-views": render_views, "inspect-media": inspect_media}[args.cmd](args)
+    return {"validate": validate, "query": query, "bundle": bundle, "build-sqlite": build_sqlite, "verify-objects": verify_objects, "render-media-report": render_media_report, "render-views": render_views, "inspect-media": inspect_media}[args.cmd](args)
 
 
 if __name__ == "__main__":
