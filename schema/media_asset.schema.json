@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "record_type",
+    "privacy",
+    "media_type",
+    "file_id",
+    "mime_type",
+    "source_ids",
+    "summary"
+  ],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z]+(\\.[a-z0-9-]+)+$"},
+    "record_type": {"const": "media_asset"},
+    "privacy": {"type": "string", "enum": ["public", "private", "sensitive"]},
+    "media_type": {"type": "string", "enum": ["image", "pdf", "audio", "video", "document", "file"]},
+    "file_id": {"type": "string"},
+    "mime_type": {"type": "string"},
+    "width": {"type": "integer", "minimum": 0},
+    "height": {"type": "integer", "minimum": 0},
+    "duration_ms": {"type": "integer", "minimum": 0},
+    "summary": {"type": "string"},
+    "source_ids": {"type": "array", "items": {"type": "string"}},
+    "created_at": {"type": "string"},
+    "synthetic": {"type": "boolean"}
+  },
+  "not": {
+    "anyOf": [
+      {"required": ["content"]},
+      {"required": ["content_b64"]},
+      {"required": ["content_bytes"]},
+      {"required": ["ocr_text"]},
+      {"required": ["transcript"]}
+    ]
+  }
+}

@@ -31,7 +31,7 @@ This repository intentionally uses synthetic examples only. Do not add real vaul
 | Path | Role | Canonical? |
 | --- | --- | --- |
 | `raw/*.jsonl` | Synthetic source evidence | input |
-| `records/*.jsonl` | Typed records: entities, projects, claims, relations, tasks, decisions, plus 10,000 synthetic note records | yes |
+| `records/*.jsonl` | Typed records: entities, projects, claims, relations, tasks, decisions, files/media, plus 10,000 synthetic note records | yes |
 | `schema/*.schema.json` | JSON Schema contracts per record type | yes |
 | `retrieval/*.jsonl` | Query hints for agents | yes |
 | `evals/*.jsonl` | Retrieval expectations | yes |
@@ -60,7 +60,10 @@ python3 scripts/vaultctx.py query vault migration
 python3 scripts/vaultctx.py bundle --goal "replace markdown with jsonl"
 python3 scripts/vaultctx.py build-sqlite
 python3 scripts/vaultctx.py render-views
+python3 scripts/vaultctx.py inspect-media --path /tmp/synthetic.png
 ```
+
+Media/file support is metadata-only in the public spike: `file` records point at synthetic `blob://sha256/...` refs, `media_asset` records describe derived media metadata, and `media_link` records connect note/source records to media. No binary payloads, real filenames, screenshots, OCR text, transcripts, or thumbnails are committed.
 
 Install as a package:
 

@@ -82,7 +82,28 @@ The shared entity contract is valuable: aliases, display name, privacy, source I
 | `claim` | what do we believe/know, with evidence? | ACME uses SAP for finance |
 | `task` | what should happen? | follow up, review, migrate, decide |
 | `decision` | what was decided and why? | JSON canonical, YAML generated |
+| `file` | which binary payload exists outside JSONL? | SHA-256, MIME type, size, storage ref |
+| `media_asset` | what media object is described by a file? | image/PDF/audio/video metadata |
+| `media_link` | where is media referenced from text/source records? | embedded_image, linked_document |
 | `note` | public-safe synthetic note-shaped fixture | vault-schema type/category coverage |
+
+## Files and media
+
+JSONL stores metadata and references, not bytes.
+
+```jsonl
+{"record_type":"file","id":"file.synthetic.image-alpha","sha256":"...","storage_ref":"blob://sha256/...","mime_type":"image/png","size_bytes":2048}
+{"record_type":"media_asset","id":"media.synthetic.image-alpha","file_id":"file.synthetic.image-alpha","media_type":"image","width":1024,"height":768}
+{"record_type":"media_link","id":"medialink.synthetic.note-image-alpha","source_id":"note.synthetic.00069","target_id":"media.synthetic.image-alpha","resolution_status":"found"}
+```
+
+Rules for the public spike:
+
+- binary payloads are never embedded in JSONL;
+- real file paths and filenames are not stored;
+- `storage_ref` is a synthetic content-addressed reference;
+- OCR/transcription/vision/thumbnail generation is not implemented here;
+- future semantic media extraction should produce reviewable proposals, not canonical truth.
 
 ## Migration strategy
 

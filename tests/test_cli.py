@@ -17,7 +17,7 @@ def run(*args):
 def test_validate_records():
     result = run("validate")
     assert "OK: validated" in result.stdout
-    assert "10015 records across 8 JSONL files" in result.stdout
+    assert "10020 records across 11 JSONL files" in result.stdout
 
 
 def test_bundle_contains_citations(tmp_path):
@@ -33,7 +33,7 @@ def test_sqlite_build_contains_records():
     run("build-sqlite")
     con = sqlite3.connect(ROOT / "dist" / "context.sqlite")
     count = con.execute("select count(*) from records").fetchone()[0]
-    assert count == 10015
+    assert count == 10020
     columns = [row[1] for row in con.execute("pragma table_info(records)")]
     assert "record_type" in columns
     assert columns[:2] == ["id", "record_type"]
@@ -51,6 +51,44 @@ def test_record_model_subtype_fields_match_schema():
     assert task["task_type"] == "pilot"
     assert {"subject_id", "relation_type", "object_id", "source_ids"}.issubset(relation)
     assert {"source_id", "type", "target_id"}.isdisjoint(relation)
+
+
+def test_media_file_records_are_metadata_only_and_public_safe():
+    file_rec = json.loads((ROOT / "records" / "files.jsonl").read_text().splitlines()[0])
+    asset_rec = json.loads((ROOT / "records" / "media_assets.jsonl").read_text().splitlines()[0])
+    link_rec = json.loads((ROOT / "records" / "media_links.jsonl").read_text().splitlines()[0])
+    assert file_rec["record_type"] == "file"
+    assert file_rec["storage_ref"].startswith("blob://sha256/")
+    assert file_rec["sha256"] in file_rec["storage_ref"]
+    assert {"content", "content_b64", "content_bytes", "path"}.isdisjoint(file_rec)
+    assert asset_rec["record_type"] == "media_asset"
+    assert asset_rec["file_id"] == file_rec["id"]
+    assert link_rec["record_type"] == "media_link"
+    assert link_rec["target_id"] == asset_rec["id"]
+    assert link_rec["resolution_status"] == "found"
+
+
+def test_sqlite_build_contains_media_tables():
+    run("build-sqlite")
+    con = sqlite3.connect(ROOT / "dist" / "context.sqlite")
+    media_links = con.execute("select count(*) from media_links").fetchone()[0]
+    files = con.execute("select count(*) from files").fetchone()[0]
+    assert media_links == 2
+    assert files == 2
+
+
+def test_inspect_synthetic_media_metadata(tmp_path):
+    png = tmp_path / "synthetic.png"
+    png.write_bytes(b"\x89PNG\r\n\x1a\n" + (13).to_bytes(4, "big") + b"IHDR" + (4).to_bytes(4, "big") + (3).to_bytes(4, "big") + b"\x08\x02\x00\x00\x00")
+    result = run("inspect-media", "--path", str(png), "--max-size-bytes", "1000")
+    meta = json.loads(result.stdout)
+    assert meta["mime_type"] == "image/png"
+    assert meta["width"] == 4
+    assert meta["height"] == 3
+    assert meta["semantic_extraction"] == "not_implemented"
+    too_large = subprocess.run(CLI + ["inspect-media", "--path", str(png), "--max-size-bytes", "3"], cwd=ROOT, text=True, capture_output=True)
+    assert too_large.returncode != 0
+    assert "file too large" in too_large.stderr
 
 
 def test_render_views_creates_project_view():
@@ -84,7 +122,7 @@ def test_module_cli_validates_from_outside_checkout(tmp_path):
         capture_output=True,
         check=True,
     )
-    assert "OK: validated 10015 records" in result.stdout
+    assert "OK: validated 10020 records across 11 JSONL files" in result.stdout
 
 
 def test_generated_dataset_covers_vault_schema_matrix():

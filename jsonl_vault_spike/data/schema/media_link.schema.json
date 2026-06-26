@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "record_type",
+    "privacy",
+    "source_id",
+    "target_id",
+    "link_type",
+    "resolution_status",
+    "source_ids",
+    "summary"
+  ],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z]+(\\.[a-z0-9-]+)+$"},
+    "record_type": {"const": "media_link"},
+    "privacy": {"type": "string", "enum": ["public", "private", "sensitive"]},
+    "source_id": {"type": "string"},
+    "target_id": {"type": "string"},
+    "target_ref": {"type": "string"},
+    "target_hash": {"type": "string"},
+    "link_type": {"type": "string"},
+    "resolution_status": {"type": "string", "enum": ["found", "missing", "external", "unsupported", "ambiguous"]},
+    "summary": {"type": "string"},
+    "source_ids": {"type": "array", "items": {"type": "string"}},
+    "created_at": {"type": "string"},
+    "synthetic": {"type": "boolean"}
+  }
+}

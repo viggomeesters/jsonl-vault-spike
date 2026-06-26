@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, json, sqlite3, sys
+import argparse, hashlib, json, mimetypes, sqlite3, sys
 from collections import defaultdict
 from pathlib import Path
 from jsonschema import Draft202012Validator
@@ -27,6 +27,9 @@ SCHEMA_BY_FILE = {
     "tasks.jsonl": "task.schema.json",
     "decisions.jsonl": "decision.schema.json",
     "notes.jsonl": "note.schema.json",
+    "files.jsonl": "file.schema.json",
+    "media_assets.jsonl": "media_asset.schema.json",
+    "media_links.jsonl": "media_link.schema.json",
 }
 
 
@@ -80,7 +83,7 @@ def validate(_args=None) -> int:
             for ref in rec.get(field, []) or []:
                 if ref not in records:
                     errors.append(f"{rec['id']}: {field} references missing id {ref}")
-        for field in ("subject_id", "source_id", "target_id", "project_id"):
+        for field in ("subject_id", "source_id", "target_id", "project_id", "file_id"):
             ref = rec.get(field)
             if ref and ref not in records:
                 errors.append(f"{rec['id']}: {field} references missing id {ref}")
@@ -119,7 +122,7 @@ def bundle(args) -> int:
             for ref in rec.get(field, []) or []:
                 if ref in records:
                     include[ref] = records[ref]
-        for field in ("subject_id", "source_id", "target_id", "project_id"):
+        for field in ("subject_id", "source_id", "target_id", "project_id", "file_id"):
             ref = rec.get(field)
             if ref in records:
                 include[ref] = records[ref]
@@ -150,10 +153,16 @@ def build_sqlite(_args=None) -> int:
     con = sqlite3.connect(db)
     con.execute("create table records(id text primary key, record_type text not null, privacy text not null, summary text, json text not null)")
     con.execute("create table relations(subject_id text, relation_type text, object_id text, json text not null)")
+    con.execute("create table files(id text primary key, sha256 text not null, mime_type text not null, size_bytes integer not null, storage_ref text not null, json text not null)")
+    con.execute("create table media_links(source_id text not null, target_id text not null, link_type text not null, resolution_status text not null, json text not null)")
     for rec in load_records().values():
         con.execute("insert into records values(?,?,?,?,?)", (rec["id"], rec["record_type"], rec.get("privacy"), rec.get("summary") or rec.get("title") or rec.get("display_name"), json.dumps(rec, ensure_ascii=False, sort_keys=True)))
         if rec["record_type"] == "relation":
             con.execute("insert into relations values(?,?,?,?)", (rec["subject_id"], rec["relation_type"], rec["object_id"], json.dumps(rec, ensure_ascii=False, sort_keys=True)))
+        if rec["record_type"] == "file":
+            con.execute("insert into files values(?,?,?,?,?,?)", (rec["id"], rec["sha256"], rec["mime_type"], rec["size_bytes"], rec["storage_ref"], json.dumps(rec, ensure_ascii=False, sort_keys=True)))
+        if rec["record_type"] == "media_link":
+            con.execute("insert into media_links values(?,?,?,?,?)", (rec["source_id"], rec["target_id"], rec["link_type"], rec["resolution_status"], json.dumps(rec, ensure_ascii=False, sort_keys=True)))
     con.commit(); con.close()
     print(f"built {db.relative_to(ROOT)}")
     return 0
@@ -230,6 +239,51 @@ def render_views(_args=None) -> int:
     return 0
 
 
+
+def sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def png_dimensions(path: Path) -> tuple[int, int] | None:
+    with path.open("rb") as handle:
+        header = handle.read(24)
+    if len(header) >= 24 and header.startswith(b"\x89PNG\r\n\x1a\n") and header[12:16] == b"IHDR":
+        return int.from_bytes(header[16:20], "big"), int.from_bytes(header[20:24], "big")
+    return None
+
+
+def inspect_media(args) -> int:
+    path = Path(args.path)
+    if not path.is_file():
+        print(f"file not found: {path}", file=sys.stderr)
+        return 1
+    size = path.stat().st_size
+    if size > args.max_size_bytes:
+        print(f"file too large for metadata extraction: {size} > {args.max_size_bytes}", file=sys.stderr)
+        return 1
+    mime_type = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
+    if mime_type == "application/octet-stream":
+        print(f"unsupported file type for metadata extraction: {path.name}", file=sys.stderr)
+        return 1
+    out = {
+        "record_type": "file_metadata",
+        "sha256": sha256_file(path),
+        "size_bytes": size,
+        "mime_type": mime_type,
+        "semantic_extraction": "not_implemented",
+        "metadata_extractor": {"type": "deterministic", "version": "synthetic-media-metadata-v1"},
+    }
+    if mime_type == "image/png":
+        dims = png_dimensions(path)
+        if dims:
+            out["width"], out["height"] = dims
+    print(json.dumps(out, sort_keys=True))
+    return 0
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="Synthetic JSONL vault/context MVP CLI")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -238,8 +292,9 @@ def main(argv=None) -> int:
     b = sub.add_parser("bundle"); b.add_argument("--goal", required=True); b.add_argument("--limit", type=int, default=8); b.add_argument("--output")
     sub.add_parser("build-sqlite")
     sub.add_parser("render-views")
+    im = sub.add_parser("inspect-media"); im.add_argument("--path", required=True); im.add_argument("--max-size-bytes", type=int, default=1_000_000)
     args = parser.parse_args(argv)
-    return {"validate": validate, "query": query, "bundle": bundle, "build-sqlite": build_sqlite, "render-views": render_views}[args.cmd](args)
+    return {"validate": validate, "query": query, "bundle": bundle, "build-sqlite": build_sqlite, "render-views": render_views, "inspect-media": inspect_media}[args.cmd](args)
 
 
 if __name__ == "__main__":
