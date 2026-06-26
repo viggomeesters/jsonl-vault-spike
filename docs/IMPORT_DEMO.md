@@ -33,4 +33,24 @@ Markdown note with embeds
   -> aggregate report + browsable dashboard
 ```
 
+Run the generated demo surface:
+
+```bash
+python3 scripts/vaultctx.py import-demo
+python3 scripts/vaultctx.py render-import-demo-dashboard
+```
+
+Generated outputs:
+
+```text
+dist/import-demo/records/*.jsonl
+  generated source/file/attachment/media records
+
+dist/import-demo/objects/sha256/...
+  generated content-addressed synthetic object store
+
+reports/import-demo-dashboard.html
+  browsable public-safe flow: source -> occurrence -> file -> object hash -> media asset
+```
+
 Media semantics such as OCR, transcripts and vision labels stay out of canonical records. If added later, they should be proposal records with evidence and review status.

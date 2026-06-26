@@ -1,8 +1,8 @@
 PYTHON ?= python3
 
-.PHONY: check generate validate import-demo verify-objects test build-sqlite render-media-report render-views bundle clean
+.PHONY: check generate validate import-demo render-import-demo-dashboard verify-objects test build-sqlite render-media-report render-views bundle clean
 
-check: repo-guard validate import-demo verify-objects test build-sqlite render-media-report render-views bundle
+check: repo-guard validate import-demo render-import-demo-dashboard verify-objects test build-sqlite render-media-report render-views bundle
 
 generate:
 	$(PYTHON) scripts/generate_synthetic_dataset.py --count 10000
@@ -15,6 +15,9 @@ validate:
 
 import-demo:
 	$(PYTHON) scripts/vaultctx.py import-demo
+
+render-import-demo-dashboard:
+	$(PYTHON) scripts/vaultctx.py render-import-demo-dashboard
 
 verify-objects:
 	$(PYTHON) scripts/vaultctx.py verify-objects

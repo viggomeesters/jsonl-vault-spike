@@ -309,3 +309,19 @@ def test_module_cli_import_demo_from_outside_checkout(tmp_path):
     assert "demo" in result.stdout
     assert (tmp_path / "demo" / "records" / "files.jsonl").exists()
     assert (tmp_path / "demo" / "objects" / "sha256").exists()
+
+
+def test_render_import_demo_dashboard_is_browsable_and_public_safe():
+    run("import-demo")
+    result = run("render-import-demo-dashboard")
+    assert "reports/import-demo-dashboard.html" in result.stdout
+    dashboard = ROOT / "reports" / "import-demo-dashboard.html"
+    html = dashboard.read_text()
+    assert "JSONL Vault Spike — synthetic import demo" in html
+    assert "Markdown embeds + synthetic mail attachments + folder-drop files" in html
+    assert "source.importdemo.markdown-note" in html
+    assert "file.importdemo.diagram-alpha" in html
+    assert "missing-demo-audio.mp3" in html
+    assert "Binary payloads in JSONL: false" in html
+    forbidden = ["/" + "home/", "/mnt/c/" + "Users", "/" + "Users/", "@" + "gmail", "@" + "icloud", "Syncthing/" + "vault", "Vi" + "ggo", "An" + "ne", "Du" + "co", "J" + "J", "Was" + "pik"]
+    assert not [token for token in forbidden if token in html]

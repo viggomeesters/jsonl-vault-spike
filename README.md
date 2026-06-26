@@ -61,6 +61,7 @@ python3 scripts/vaultctx.py validate
 python3 scripts/vaultctx.py query vault migration
 python3 scripts/vaultctx.py bundle --goal "replace markdown with jsonl"
 python3 scripts/vaultctx.py import-demo
+python3 scripts/vaultctx.py render-import-demo-dashboard
 python3 scripts/vaultctx.py verify-objects
 python3 scripts/vaultctx.py render-media-report
 python3 scripts/vaultctx.py build-sqlite
@@ -79,6 +80,7 @@ Media/file support is a complete synthetic MVP slice:
 - `records/media_links.jsonl` stores resolved and missing media references;
 - `verify-objects` proves file records match object bytes by SHA-256 and size;
 - `render-media-report` writes an aggregate-only media summary.
+- `render-import-demo-dashboard` writes a browsable HTML dashboard that shows the flow from source fixture to attachment/media link, file record, SHA-256 object and media asset.
 
 No real filenames, real attachments, local paths, screenshots, OCR text, transcripts, thumbnails, or base64 payloads are committed.
 

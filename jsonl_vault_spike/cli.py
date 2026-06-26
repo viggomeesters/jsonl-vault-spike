@@ -250,6 +250,58 @@ def import_demo(args) -> int:
     print(f"wrote {out_root.relative_to(ROOT) if out_root.is_relative_to(ROOT) else out_root}")
     return 0
 
+
+def render_import_demo_dashboard(args) -> int:
+    demo_root = Path(args.input)
+    if not (demo_root / "records").exists():
+        print(f"import-demo records not found: {demo_root / 'records'}", file=sys.stderr)
+        return 1
+    report_path = demo_root / "reports" / "import-demo-summary.json"
+    report = json.loads(report_path.read_text(encoding="utf-8")) if report_path.exists() else {}
+    def rows(name: str) -> list[dict]:
+        path = demo_root / "records" / f"{name}.jsonl"
+        return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()] if path.exists() else []
+    sources = rows("sources")
+    files = rows("files")
+    attachments = rows("attachments")
+    assets = rows("media_assets")
+    links = rows("media_links")
+    files_by_id = {row["id"]: row for row in files}
+    assets_by_id = {row["id"]: row for row in assets}
+    html_rows = []
+    for att in attachments:
+        file_rec = files_by_id.get(att["file_id"], {})
+        asset = next((a for a in assets if a.get("file_id") == att["file_id"]), {})
+        link = next((l for l in links if l.get("target_id") == asset.get("id")), {})
+        html_rows.append(
+            f"<tr><td><code>{att['source_id']}</code></td><td><code>{att['attachment_type']}</code></td>"
+            f"<td><code>{att['file_id']}</code></td><td>{file_rec.get('mime_type','')}</td>"
+            f"<td><code>{str(file_rec.get('sha256',''))[:12]}…</code></td><td>{asset.get('media_type','')}</td>"
+            f"<td>{link.get('resolution_status','found')}</td></tr>"
+        )
+    missing_rows = [l for l in links if l.get("resolution_status") != "found"]
+    cards = "".join(f"<div class='card'><strong>{k}</strong><span>{v}</span></div>" for k, v in sorted((report.get("counts") or {}).items()))
+    missing = "".join(f"<li><code>{m.get('target_ref')}</code> from <code>{m.get('source_id')}</code> → {m.get('resolution_status')}</li>" for m in missing_rows) or "<li>None</li>"
+    html = f"""<!doctype html>
+<html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">
+<title>JSONL Vault Spike — Synthetic Import Demo</title>
+<style>
+body{{font-family:Inter,system-ui,sans-serif;margin:0;background:#0f172a;color:#e2e8f0}}main{{max-width:1120px;margin:0 auto;padding:40px 24px}}h1{{font-size:34px}}.lede{{color:#cbd5e1;max-width:760px;line-height:1.6}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:24px 0}}.card{{background:#111827;border:1px solid #334155;border-radius:14px;padding:16px}}.card span{{display:block;font-size:28px;margin-top:8px;color:#38bdf8}}.flow{{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:28px 0}}.step{{background:#172554;border:1px solid #2563eb;border-radius:14px;padding:14px}}table{{width:100%;border-collapse:collapse;background:#111827;border-radius:14px;overflow:hidden}}th,td{{padding:10px;border-bottom:1px solid #334155;text-align:left;font-size:14px}}th{{background:#1e293b}}code{{color:#93c5fd}}.ok{{color:#86efac}}.warn{{color:#facc15}}</style></head>
+<body><main>
+<h1>JSONL Vault Spike — synthetic import demo</h1>
+<p class=\"lede\">Public-safe end-to-end proof: Markdown embeds + synthetic mail attachments + folder-drop files become generated JSONL records, content-addressed objects, aggregate reports, and this dashboard. No private paths, real attachments, OCR, transcripts, thumbnails, or binary payloads in JSONL.</p>
+<section class=\"grid\">{cards}</section>
+<section class=\"flow\"><div class=\"step\">1. Synthetic source fixtures</div><div class=\"step\">2. Attachment/media links</div><div class=\"step\">3. File records</div><div class=\"step\">4. SHA-256 objects</div><div class=\"step\">5. Media assets + report</div></section>
+<h2>Resolved flow</h2><table><thead><tr><th>Source</th><th>Occurrence</th><th>File</th><th>MIME</th><th>SHA-256</th><th>Media type</th><th>Status</th></tr></thead><tbody>{''.join(html_rows)}</tbody></table>
+<h2>Missing/external cases</h2><ul>{missing}</ul>
+<p class=\"ok\">Synthetic only: {str(report.get('synthetic_only') is True).lower()} · Binary payloads in JSONL: {str(report.get('binary_payloads_in_jsonl') is True).lower()}</p>
+</main></body></html>"""
+    out = Path(args.output)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(html, encoding="utf-8")
+    print(f"wrote {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out}")
+    return 0
+
 def build_sqlite(_args=None) -> int:
     DIST.mkdir(exist_ok=True)
     db = DIST / "context.sqlite"
@@ -477,13 +529,14 @@ def main(argv=None) -> int:
     q = sub.add_parser("query"); q.add_argument("terms", nargs="+"); q.add_argument("--limit", type=int, default=10)
     b = sub.add_parser("bundle"); b.add_argument("--goal", required=True); b.add_argument("--limit", type=int, default=8); b.add_argument("--output")
     idemo = sub.add_parser("import-demo"); idemo.add_argument("--fixture-root"); idemo.add_argument("--output", default="dist/import-demo"); idemo.add_argument("--keep-existing", action="store_true")
+    dash = sub.add_parser("render-import-demo-dashboard"); dash.add_argument("--input", default="dist/import-demo"); dash.add_argument("--output", default="reports/import-demo-dashboard.html")
     sub.add_parser("build-sqlite")
     sub.add_parser("verify-objects")
     sub.add_parser("render-media-report")
     sub.add_parser("render-views")
     im = sub.add_parser("inspect-media"); im.add_argument("--path", required=True); im.add_argument("--max-size-bytes", type=int, default=1_000_000)
     args = parser.parse_args(argv)
-    return {"validate": validate, "query": query, "bundle": bundle, "import-demo": import_demo, "build-sqlite": build_sqlite, "verify-objects": verify_objects, "render-media-report": render_media_report, "render-views": render_views, "inspect-media": inspect_media}[args.cmd](args)
+    return {"validate": validate, "query": query, "bundle": bundle, "import-demo": import_demo, "render-import-demo-dashboard": render_import_demo_dashboard, "build-sqlite": build_sqlite, "verify-objects": verify_objects, "render-media-report": render_media_report, "render-views": render_views, "inspect-media": inspect_media}[args.cmd](args)
 
 
 if __name__ == "__main__":
