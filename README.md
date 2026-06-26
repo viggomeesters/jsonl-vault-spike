@@ -60,6 +60,7 @@ python3 scripts/generate_synthetic_dataset.py --count 10000
 python3 scripts/vaultctx.py validate
 python3 scripts/vaultctx.py query vault migration
 python3 scripts/vaultctx.py bundle --goal "replace markdown with jsonl"
+python3 scripts/vaultctx.py import-demo
 python3 scripts/vaultctx.py verify-objects
 python3 scripts/vaultctx.py render-media-report
 python3 scripts/vaultctx.py build-sqlite
@@ -70,6 +71,7 @@ python3 scripts/vaultctx.py inspect-media --path objects/sha256/<prefix>/<sha256
 Media/file support is a complete synthetic MVP slice:
 
 - `fixtures/import-demo/` models the source side: Markdown embeds, a synthetic mail with attachment manifest, and folder-drop files;
+- `import-demo` turns those fixtures into generated demo records and content-addressed objects under `dist/import-demo/` without overwriting canonical records;
 - `objects/sha256/` contains three tiny synthetic fixtures: PNG, PDF, and CSV;
 - `records/files.jsonl` stores content hashes, MIME type, byte size, and synthetic blob refs;
 - `records/attachments.jsonl` stores note/source attachment occurrences;

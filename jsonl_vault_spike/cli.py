@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, hashlib, json, mimetypes, sqlite3, sys
+import argparse, hashlib, json, mimetypes, shutil, sqlite3, sys
 from collections import defaultdict
 from pathlib import Path
 from jsonschema import Draft202012Validator
@@ -16,6 +16,7 @@ else:
 RECORDS = DATA_ROOT / "records"
 SCHEMA = DATA_ROOT / "schema"
 OBJECTS = DATA_ROOT / "objects" / "sha256"
+FIXTURES = DATA_ROOT / "fixtures" / "import-demo"
 DIST = ROOT / "dist"
 REPORTS = ROOT / "reports"
 VIEWS = ROOT / "views" / "markdown"
@@ -147,6 +148,107 @@ def bundle(args) -> int:
         print(json.dumps(out, indent=2, ensure_ascii=False))
     return 0
 
+
+
+def write_jsonl_file(path: Path, rows: list[dict]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("".join(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n" for row in rows), encoding="utf-8")
+
+
+def copy_to_demo_object_store(src: Path, out_root: Path) -> tuple[str, int, str]:
+    digest = sha256_file(src)
+    size = src.stat().st_size
+    ext = src.suffix.lower()
+    object_rel = f"objects/sha256/{digest[:2]}/{digest}{ext}"
+    dst = out_root / object_rel
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(src, dst)
+    return digest, size, object_rel
+
+
+def import_demo(args) -> int:
+    fixture_root = Path(args.fixture_root) if args.fixture_root else FIXTURES
+    out_root = Path(args.output)
+    if not fixture_root.exists():
+        print(f"fixture root not found: {fixture_root}", file=sys.stderr)
+        return 1
+    if out_root.exists() and not args.keep_existing:
+        shutil.rmtree(out_root)
+    records_dir = out_root / "records"
+    report_dir = out_root / "reports"
+    manifest = json.loads((fixture_root / "manifest.json").read_text(encoding="utf-8"))
+    if manifest.get("synthetic_only") is not True:
+        print("import-demo only accepts synthetic fixtures", file=sys.stderr)
+        return 1
+
+    sources = [
+        {"id":"source.importdemo.markdown-note","record_type":"source","source_type":"markdown_fixture","privacy":"public","summary":"Synthetic Markdown note with media embeds and a missing media case.","synthetic":True,"locator":{"type":"fixture","ref":"markdown/synthetic-project-note.md"}},
+        {"id":"source.importdemo.mail-message","record_type":"source","source_type":"mail_fixture","privacy":"public","summary":"Synthetic mail envelope with attachment manifest.","synthetic":True,"locator":{"type":"fixture","ref":"mail/message-alpha.json"}},
+        {"id":"source.importdemo.folder-drop","record_type":"source","source_type":"folder_drop_fixture","privacy":"public","summary":"Synthetic folder-drop manifest with two items.","synthetic":True,"locator":{"type":"fixture","ref":"folder-drop/drop-manifest.json"}},
+    ]
+    files = []
+    attachments = []
+    media_assets = []
+    media_links = []
+    source_for_role = {
+        "markdown_embed": "source.importdemo.markdown-note",
+        "mail_attachment": "source.importdemo.mail-message",
+        "folder_drop_item": "source.importdemo.folder-drop",
+    }
+    attachment_type_for_role = {
+        "markdown_embed": "note_embed",
+        "mail_attachment": "mail_attachment",
+        "folder_drop_item": "linked_file",
+    }
+    link_type_for_role = {
+        "markdown_embed": "embedded_image",
+        "mail_attachment": "mail_attachment",
+        "folder_drop_item": "folder_drop_item",
+    }
+    media_type_for_mime = {
+        "image/png": "image",
+        "application/pdf": "pdf",
+        "text/csv": "document",
+        "text/plain": "document",
+    }
+    for idx, item in enumerate(manifest["fixtures"], 1):
+        src = fixture_root / item["relative_path"]
+        digest, size, object_rel = copy_to_demo_object_store(src, out_root)
+        if digest != item["sha256"] or size != item["size_bytes"]:
+            print(f"fixture manifest drift: {item['relative_path']}", file=sys.stderr)
+            return 1
+        mime_type = mimetypes.guess_type(src.name)[0] or "application/octet-stream"
+        slug = Path(item["relative_path"]).stem.replace("_", "-")
+        file_id = f"file.importdemo.{slug}"
+        source_id = source_for_role[item["fixture_role"]]
+        files.append({"id":file_id,"record_type":"file","privacy":"public","file_type":"image" if mime_type.startswith("image/") else "document","sha256":digest,"size_bytes":size,"mime_type":mime_type,"storage_ref":f"blob://sha256/{digest}","object_path":object_rel,"source_ids":[source_id],"synthetic":True,"summary":f"Generated import-demo file record for synthetic {item['fixture_role']} fixture."})
+        attachments.append({"id":f"attachment.importdemo.{idx:03d}","record_type":"attachment","privacy":"public","attachment_type":attachment_type_for_role[item["fixture_role"]],"source_id":source_id,"file_id":file_id,"resolution_status":"found","source_ids":[source_id],"synthetic":True,"summary":f"Generated import-demo attachment occurrence for {file_id}."})
+        media_id = f"media.importdemo.{slug}"
+        asset = {"id":media_id,"record_type":"media_asset","privacy":"public","media_type":media_type_for_mime.get(mime_type, "document"),"file_id":file_id,"mime_type":mime_type,"source_ids":[source_id],"synthetic":True,"summary":f"Generated import-demo media asset for {file_id}."}
+        dims = png_dimensions(src) if mime_type == "image/png" else None
+        if dims:
+            asset["width"], asset["height"] = dims
+        media_assets.append(asset)
+        media_links.append({"id":f"medialink.importdemo.{idx:03d}","record_type":"media_link","privacy":"public","source_id":source_id,"target_id":media_id,"target_ref":item["relative_path"],"target_hash":digest,"link_type":link_type_for_role[item["fixture_role"]],"resolution_status":"found","source_ids":[source_id],"synthetic":True,"summary":f"Generated import-demo media link from {source_id} to {media_id}."})
+    media_links.append({"id":"medialink.importdemo.missing-audio","record_type":"media_link","privacy":"public","source_id":"source.importdemo.markdown-note","target_ref":"missing-demo-audio.mp3","link_type":"embedded_audio","resolution_status":"missing","source_ids":["source.importdemo.markdown-note"],"synthetic":True,"summary":"Generated missing media case from the Markdown fixture."})
+
+    write_jsonl_file(records_dir / "sources.jsonl", sources)
+    write_jsonl_file(records_dir / "files.jsonl", files)
+    write_jsonl_file(records_dir / "attachments.jsonl", attachments)
+    write_jsonl_file(records_dir / "media_assets.jsonl", media_assets)
+    write_jsonl_file(records_dir / "media_links.jsonl", media_links)
+    report = {
+        "synthetic_only": True,
+        "source_fixtures": {"markdown": 1, "mail": 1, "folder_drop": 1},
+        "counts": {"sources": len(sources), "files": len(files), "attachments": len(attachments), "media_assets": len(media_assets), "media_links": len(media_links), "objects": len(files)},
+        "media_links_by_status": {"found": len(media_links) - 1, "missing": 1},
+        "binary_payloads_in_jsonl": False,
+        "output_contract": "generated demo records and objects under dist/import-demo; canonical records are not overwritten",
+    }
+    report_dir.mkdir(parents=True, exist_ok=True)
+    (report_dir / "import-demo-summary.json").write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print(f"wrote {out_root.relative_to(ROOT) if out_root.is_relative_to(ROOT) else out_root}")
+    return 0
 
 def build_sqlite(_args=None) -> int:
     DIST.mkdir(exist_ok=True)
@@ -374,13 +476,14 @@ def main(argv=None) -> int:
     sub.add_parser("validate")
     q = sub.add_parser("query"); q.add_argument("terms", nargs="+"); q.add_argument("--limit", type=int, default=10)
     b = sub.add_parser("bundle"); b.add_argument("--goal", required=True); b.add_argument("--limit", type=int, default=8); b.add_argument("--output")
+    idemo = sub.add_parser("import-demo"); idemo.add_argument("--fixture-root"); idemo.add_argument("--output", default="dist/import-demo"); idemo.add_argument("--keep-existing", action="store_true")
     sub.add_parser("build-sqlite")
     sub.add_parser("verify-objects")
     sub.add_parser("render-media-report")
     sub.add_parser("render-views")
     im = sub.add_parser("inspect-media"); im.add_argument("--path", required=True); im.add_argument("--max-size-bytes", type=int, default=1_000_000)
     args = parser.parse_args(argv)
-    return {"validate": validate, "query": query, "bundle": bundle, "build-sqlite": build_sqlite, "verify-objects": verify_objects, "render-media-report": render_media_report, "render-views": render_views, "inspect-media": inspect_media}[args.cmd](args)
+    return {"validate": validate, "query": query, "bundle": bundle, "import-demo": import_demo, "build-sqlite": build_sqlite, "verify-objects": verify_objects, "render-media-report": render_media_report, "render-views": render_views, "inspect-media": inspect_media}[args.cmd](args)
 
 
 if __name__ == "__main__":

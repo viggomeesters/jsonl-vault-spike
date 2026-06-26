@@ -1,6 +1,7 @@
 dist/*.sqlite
 dist/*.duckdb
 dist/bundles/*.json
+dist/import-demo/
 dist/*.whl
 dist/*.tar.gz
 build/

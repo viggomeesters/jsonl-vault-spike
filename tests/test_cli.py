@@ -269,3 +269,43 @@ def test_synthetic_import_demo_fixtures_are_complete_and_public_safe():
         "Was" + "pik",
     ]
     assert not [token for token in forbidden if token in fixture_text]
+
+
+def test_import_demo_generates_records_objects_and_report():
+    result = run("import-demo")
+    assert "dist/import-demo" in result.stdout
+    out = ROOT / "dist" / "import-demo"
+    report = json.loads((out / "reports" / "import-demo-summary.json").read_text())
+    assert report["synthetic_only"] is True
+    assert report["binary_payloads_in_jsonl"] is False
+    assert report["source_fixtures"] == {"folder_drop": 1, "mail": 1, "markdown": 1}
+    assert report["counts"] == {"attachments": 4, "files": 4, "media_assets": 4, "media_links": 5, "objects": 4, "sources": 3}
+    assert report["media_links_by_status"] == {"found": 4, "missing": 1}
+    for name in ["sources", "files", "attachments", "media_assets", "media_links"]:
+        assert (out / "records" / f"{name}.jsonl").exists()
+    files = [json.loads(line) for line in (out / "records" / "files.jsonl").read_text().splitlines()]
+    links = [json.loads(line) for line in (out / "records" / "media_links.jsonl").read_text().splitlines()]
+    assert any(link["resolution_status"] == "missing" and "target_id" not in link for link in links)
+    for rec in files:
+        object_path = out / rec["object_path"]
+        assert object_path.exists()
+        data = object_path.read_bytes()
+        assert hashlib.sha256(data).hexdigest() == rec["sha256"]
+        assert len(data) == rec["size_bytes"]
+        assert {"content", "content_b64", "content_bytes", "path"}.isdisjoint(rec)
+
+
+def test_module_cli_import_demo_from_outside_checkout(tmp_path):
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(ROOT)
+    result = subprocess.run(
+        [sys.executable, "-m", "jsonl_vault_spike.cli", "import-demo", "--output", str(tmp_path / "demo")],
+        cwd=tmp_path,
+        env=env,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    assert "demo" in result.stdout
+    assert (tmp_path / "demo" / "records" / "files.jsonl").exists()
+    assert (tmp_path / "demo" / "objects" / "sha256").exists()
