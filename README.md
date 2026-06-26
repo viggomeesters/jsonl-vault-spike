@@ -32,6 +32,7 @@ This repository intentionally uses synthetic examples only. Do not add real vaul
 | --- | --- | --- |
 | `raw/*.jsonl` | Synthetic source evidence | input |
 | `records/*.jsonl` | Typed records: entities, projects, claims, relations, tasks, decisions, files, attachments, media links, plus 10,000 synthetic note records | yes |
+| `fixtures/import-demo/` | Synthetic Markdown/mail/folder-drop input for the 9000x import flow | fixture input |
 | `objects/sha256/` | Tiny synthetic content-addressed object fixtures used for hash/integrity tests | fixture input |
 | `schema/*.schema.json` | JSON Schema contracts per record type | yes |
 | `retrieval/*.jsonl` | Query hints for agents | yes |
@@ -68,6 +69,7 @@ python3 scripts/vaultctx.py inspect-media --path objects/sha256/<prefix>/<sha256
 
 Media/file support is a complete synthetic MVP slice:
 
+- `fixtures/import-demo/` models the source side: Markdown embeds, a synthetic mail with attachment manifest, and folder-drop files;
 - `objects/sha256/` contains three tiny synthetic fixtures: PNG, PDF, and CSV;
 - `records/files.jsonl` stores content hashes, MIME type, byte size, and synthetic blob refs;
 - `records/attachments.jsonl` stores note/source attachment occurrences;

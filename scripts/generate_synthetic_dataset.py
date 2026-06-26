@@ -209,7 +209,7 @@ def write_jsonl(path: Path, records: list[dict]) -> None:
 
 def sync_embedded_data() -> None:
     normalize_demo_records()
-    for sub in ["records", "schema", "raw", "retrieval", "evals"]:
+    for sub in ["records", "schema", "raw", "retrieval", "evals", "fixtures", "objects"]:
         dst = EMBEDDED_DATA / sub
         if dst.exists():
             shutil.rmtree(dst)

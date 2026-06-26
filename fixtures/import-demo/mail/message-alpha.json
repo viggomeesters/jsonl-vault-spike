@@ -1,0 +1,16 @@
+{
+  "attachments": [
+    {
+      "filename": "briefing-alpha.pdf",
+      "media_type": "application/pdf",
+      "relative_path": "attachments/briefing-alpha.pdf"
+    }
+  ],
+  "body_text": "Public-safe synthetic mail body referencing a PDF attachment and the Markdown media demo.",
+  "from_label": "synthetic-sender",
+  "id": "mail.synthetic.import-demo.001",
+  "schema": "jsonl-vault-spike.synthetic-mail.v1",
+  "subject": "Synthetic media import demo briefing",
+  "synthetic": true,
+  "to_label": "synthetic-recipient"
+}

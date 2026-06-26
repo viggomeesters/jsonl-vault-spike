@@ -12,7 +12,7 @@ This repo is a synthetic MVP for an agent-first JSONL vault/context layer.
 ## Safety
 
 - Do not add real personal vault data, real names, real emails, real paths, credentials, exports, screenshots, or real attachments.
-- Tiny synthetic attachment/media fixtures are allowed only under `objects/sha256/` plus the matching package-data mirror, and must be covered by `verify-objects`.
+- Tiny synthetic attachment/media fixtures are allowed only under `fixtures/import-demo/`, `objects/sha256/`, plus the matching package-data mirrors, and must be covered by fixture/public-safety tests and `verify-objects`.
 - Keep examples synthetic and public-safe.
 - If using this against a real vault later, build a separate importer with dry-run and redaction gates first.
 

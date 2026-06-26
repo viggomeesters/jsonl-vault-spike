@@ -35,4 +35,4 @@ include = ["jsonl_vault_spike*"]
 namespaces = true
 
 [tool.setuptools.package-data]
-jsonl_vault_spike = ["data/**/*.jsonl", "data/**/*.json", "data/objects/**/*", "data/README.md"]
+jsonl_vault_spike = ["data/**/*.jsonl", "data/**/*.json", "data/objects/**/*", "data/fixtures/**/*", "data/README.md"]

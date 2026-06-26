@@ -8,5 +8,7 @@ recursive-include raw *.jsonl
 recursive-include retrieval *.jsonl
 recursive-include evals *.jsonl
 recursive-include reports *.json
+recursive-include objects *
+recursive-include fixtures *
 recursive-include assets *.svg
 recursive-include .github *.md *.yml

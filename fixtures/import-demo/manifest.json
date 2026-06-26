@@ -1,0 +1,34 @@
+{
+  "fixtures": [
+    {
+      "fixture_role": "markdown_embed",
+      "relative_path": "attachments/diagram-alpha.png",
+      "sha256": "5913c237bf8aa77a55f2cf2d741fec3ba5bd319b0edd9a43a5e88a4c909c63ea",
+      "size_bytes": 74,
+      "synthetic": true
+    },
+    {
+      "fixture_role": "folder_drop_item",
+      "relative_path": "folder-drop/metrics-alpha.csv",
+      "sha256": "87ab8a3fba72c59824c1d6acacd5ec3fd9d5cc72cdfad67f544cb873bc647888",
+      "size_bytes": 34,
+      "synthetic": true
+    },
+    {
+      "fixture_role": "folder_drop_item",
+      "relative_path": "folder-drop/readme-alpha.txt",
+      "sha256": "7cbee75abbf70a88bf7999c8656bbd2ea049c8f636bc20fbcaf7cfd0147dab36",
+      "size_bytes": 54,
+      "synthetic": true
+    },
+    {
+      "fixture_role": "mail_attachment",
+      "relative_path": "mail/attachments/briefing-alpha.pdf",
+      "sha256": "9a0bfe94e831e0214ec01f01c6d53a2a6e960a61748d41ab34990e6b357ac554",
+      "size_bytes": 81,
+      "synthetic": true
+    }
+  ],
+  "schema": "jsonl-vault-spike.import-demo.v1",
+  "synthetic_only": true
+}

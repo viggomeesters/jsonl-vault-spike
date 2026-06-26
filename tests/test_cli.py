@@ -1,4 +1,5 @@
 from pathlib import Path
+import hashlib
 import json
 import os
 import sqlite3
@@ -224,3 +225,47 @@ def test_media_link_schema_requires_target_only_for_found_links():
     assert list(validator.iter_errors(found_without_target)), "found media links must resolve to a target_id"
     missing_with_target = dict(missing_link, target_id="media.synthetic.fake")
     assert list(validator.iter_errors(missing_with_target)), "missing media links must not fake a target_id"
+
+
+def test_synthetic_import_demo_fixtures_are_complete_and_public_safe():
+    fixture_root = ROOT / "fixtures" / "import-demo"
+    embedded_root = ROOT / "jsonl_vault_spike" / "data" / "fixtures" / "import-demo"
+    manifest = json.loads((fixture_root / "manifest.json").read_text())
+    assert manifest["schema"] == "jsonl-vault-spike.import-demo.v1"
+    assert manifest["synthetic_only"] is True
+    roles = {item["fixture_role"] for item in manifest["fixtures"]}
+    assert roles == {"markdown_embed", "mail_attachment", "folder_drop_item"}
+    required = [
+        fixture_root / "markdown" / "synthetic-project-note.md",
+        fixture_root / "mail" / "message-alpha.json",
+        fixture_root / "folder-drop" / "drop-manifest.json",
+    ]
+    assert all(path.exists() for path in required)
+    note_text = required[0].read_text()
+    assert "../attachments/diagram-alpha.png" in note_text
+    assert "../folder-drop/metrics-alpha.csv" in note_text
+    assert "missing-demo-audio.mp3" in note_text
+    for item in manifest["fixtures"]:
+        src = fixture_root / item["relative_path"]
+        mirror = embedded_root / item["relative_path"]
+        assert src.exists(), item
+        assert mirror.exists(), item
+        data = src.read_bytes()
+        assert mirror.read_bytes() == data
+        assert hashlib.sha256(data).hexdigest() == item["sha256"]
+        assert len(data) == item["size_bytes"]
+    fixture_text = "\n".join(path.read_text(errors="ignore") for path in fixture_root.rglob("*") if path.is_file())
+    forbidden = [
+        "/" + "home/",
+        "/mnt/c/" + "Users",
+        "/" + "Users/",
+        "@" + "gmail",
+        "@" + "icloud",
+        "Syncthing/" + "vault",
+        "Vi" + "ggo",
+        "An" + "ne",
+        "Du" + "co",
+        "J" + "J",
+        "Was" + "pik",
+    ]
+    assert not [token for token in forbidden if token in fixture_text]

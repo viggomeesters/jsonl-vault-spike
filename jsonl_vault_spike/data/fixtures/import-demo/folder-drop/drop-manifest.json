@@ -1,0 +1,8 @@
+{
+  "items": [
+    "metrics-alpha.csv",
+    "readme-alpha.txt"
+  ],
+  "schema": "jsonl-vault-spike.folder-drop.v1",
+  "synthetic": true
+}
