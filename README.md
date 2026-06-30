@@ -4,6 +4,8 @@
 
 # jsonl-vault-spike
 
+Project page: <https://viggomeesters.com/jsonl-vault-spike/>
+
 [![Status](https://img.shields.io/badge/status-proof--of--concept-blue)](#)
 [![Data](https://img.shields.io/badge/data-synthetic--only-green)](#safety-boundary)
 [![Gate](https://img.shields.io/badge/gate-make%20check-111827)](#verification)
